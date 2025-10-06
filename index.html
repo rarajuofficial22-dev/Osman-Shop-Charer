@@ -3,65 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Osman Topup Career</title>
-    <!-- আপনার মূল CSS, কিছু নতুন স্টাইলসহ -->
+    <title>Osman Shop Charer</title>
     <style>
         :root { --primary-color: #4a148c; --secondary-color: #5e35b1; --success-color: #4CAF50; --pending-color: #ff9800; --danger-color: #f44336; --verified-blue: #1DA1F2; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; padding-bottom: 70px; }
-        .notice-bar { background-color: #fffbe7; color: #856404; text-align: center; padding: 12px; font-weight: bold; border-bottom: 1px solid #ffeeba; font-size: 0.9em; }
-        header { background: linear-gradient(90deg, var(--primary-color), #880e4f); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        /* === পরিবর্তিত অংশ: Body Padding ঠিক করা হয়েছে === */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; padding-top: 90px; padding-bottom: 70px; }
+        
+        /* === পরিবর্তিত অংশ: Header এখন টপ বার হিসেবে কাজ করবে === */
+        header { background: linear-gradient(90deg, var(--primary-color), #880e4f); color: white; padding: 10px 20px; position: fixed; top: 0; width: calc(100% - 40px); z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .header-content h1 { margin: 0; font-size: 1.4em; }
-        #auth-container button, #user-profile-view a { background-color: var(--secondary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em; text-decoration: none; }
-        #user-profile-view { display: flex; align-items: center; gap: 10px; }
+        .shop-title h2 { margin: 0; font-size: 1.2em; font-weight: bold; }
+        #auth-container { display: flex; align-items: center; gap: 15px; }
+        #auth-container .profile-icon { background-color: var(--secondary-color); border-radius: 8px; padding: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        #auth-container .profile-icon svg { width: 24px; height: 24px; fill: white; }
+        #auth-container button { background-color: white; color: var(--primary-color); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        
+        /* === পরিবর্তিত অংশ: Notice Bar এর পজিশন আপডেট করা হয়েছে === */
+        .notice-bar { background-color: #fffbe7; color: #856404; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9em; position: fixed; top: 52px; width: 100%; z-index: 98; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; overflow: hidden; }
+        .notice-bar-content { margin: 0; display: inline-block; padding-left: 100%; animation: marquee 18s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
         main { padding: 20px; max-width: 1200px; margin: 0 auto; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .loader-container { display: flex; justify-content: center; align-items: center; padding: 50px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .product-card { background-color: white; border: 1px solid #ddd; border-radius: 10px; text-align: center; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .product-card h3 { margin-top: 0; color: var(--primary-color); }
-        .product-card .price { color: #d32f2f; font-weight: bold; font-size: 1.3em; margin: 10px 0; }
-        .buy-button { background-color: var(--secondary-color); color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .product-card { background-color: white; border: 1px solid #ddd; border-radius: 10px; text-align: center; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.12); }
+        .product-card img { width: 100%; height: 120px; margin-bottom: 10px; border-radius: 8px; object-fit: cover; }
+        .product-card h3 { margin: 0; color: #333; font-size: 1em; font-weight: 500; }
+        
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; text-decoration: none; transition: color 0.2s; padding: 5px 0; }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 2px; }
         .nav-item span { font-size: 0.8em; }
         .nav-item.active { color: var(--primary-color); }
         .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 10px; animation: slide-down 0.4s; }
-        @keyframes slide-down { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 10px; animation: slide-down 0.4s; }
         .close-button { color: #aaa; float: right; font-size: 32px; font-weight: bold; cursor: pointer; }
         .payment-info { background: #fffbe6; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .payment-number { font-size: 1.2em; font-weight: bold; color: var(--danger-color); }
+        .order-notice { background-color: #fff3e0; border: 1px solid #ffcc80; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; text-align: left; }
         form label { display: block; margin-bottom: 10px; font-weight: bold; text-align: left; }
-        form input, form select { width: calc(100% - 24px); padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        form input { width: calc(100% - 24px); padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
         form button { width: 100%; background-color: var(--success-color); color: white; padding: 14px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; }
-        #orders-container .order-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; background: white; border-left: 5px solid; }
-        #orders-container h4 { margin: 0; }
-        .status-badge { padding: 5px 12px; border-radius: 15px; font-size: 0.8em; font-weight: bold; color: white; }
+        
+        #orders-container .order-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            border-left: 6px solid;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .order-item h4 { margin: 0 0 5px 0; font-size: 1.1em; font-weight: 600; color: #333; }
+        .order-item p { margin: 0; color: #555; font-size: 1em; word-wrap: break-word; }
+        .order-item p strong { color: #333; }
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: 500; color: white; display: inline-block; }
         .status-Completed { background-color: var(--success-color); } .status-Pending { background-color: var(--pending-color); } .status-Cancelled { background-color: var(--danger-color); }
         
-        /* নতুন এবং পরিবর্তিত স্টাইল */
+        #plan-selection-page .product-header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px; }
+        #plan-selection-page .product-header img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        #plan-selection-page .product-header h3, #plan-selection-page .product-header p { margin: 0; }
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .section-header .step-number { background-color: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .plan-item-radio { position: relative; }
+        .plan-item-radio input[type="radio"] { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
+        .plan-item-radio .plan-label-radio { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; }
+        .plan-item-radio .plan-label-radio .plan-name { font-size: 1em; font-weight: 500; }
+        .plan-item-radio .plan-label-radio .plan-price { font-size: 1.1em; font-weight: bold; color: var(--danger-color); margin-top: 5px; }
+        .plan-item-radio input[type="radio"]:checked + .plan-label-radio { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(74, 20, 140, 0.5); }
+        .next-step-button { width: 100%; padding: 15px; background-color: var(--success-color); color: white; border: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; }
+        .back-button { background: none; border: none; color: var(--primary-color); margin-top: 15px; cursor: pointer; display: block; text-align: center; width: 100%; font-size: 1em; }
+        
         #auth-modal-content .form-container { display: none; }
         #auth-modal-content .form-container.active { display: block; }
         .google-btn { background-color: #ffffff; color: #444; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; width: 100%; padding: 12px; font-size: 1em; font-weight: bold; }
         .google-btn svg { width: 20px; height: 20px; }
         .form-switch-link { text-align: center; margin-top: 15px; cursor: pointer; color: var(--secondary-color); }
         .forgot-password-link { text-align: right; font-size: 0.9em; margin-top: -10px; margin-bottom: 15px; cursor: pointer; color: var(--secondary-color); }
-        
-        #profile-page .profile-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;}
-        #profile-page .profile-card h3 { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.8em; margin-bottom: 10px;}
+        #profile-container, #orders-container { min-height: 200px; }
+        #profile-container .profile-card, .auth-prompt { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        #profile-container h3 { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.8em; margin-bottom: 10px; }
         .verification-badge { background-color: var(--verified-blue); color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
         .verification-badge svg { width: 14px; height: 14px; fill: white; }
-        #logout-button { background-color: var(--danger-color); margin-top: 20px; }
-        .auth-prompt { text-align: center; padding: 50px 20px; background: white; border-radius: 10px; }
+        #logout-button { background-color: var(--danger-color); margin-top: 20px; width: 100%; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1em; padding: 12px; border: none; border-radius: 5px; cursor: pointer; }
+        #logout-button svg { width: 20px; height: 20px; fill: white; }
         .auth-prompt button { margin-top: 20px; background-color: var(--primary-color); color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; }
+        
+        .section-title { font-size: 1.5em; color: #333; margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
 
-        footer { background-color: #0c1446; color: #e0e0e0; padding: 50px 20px 20px; margin-top: 40px; text-align: center; }
+        footer { background-color: #0c1446; color: #e0e0e0; padding: 50px 20px 20px; text-align: center; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left; max-width: 1100px; margin: 0 auto; }
         .footer-col h3 { color: white; text-transform: uppercase; margin-bottom: 20px; font-size: 1.2em; }
         .footer-col p { line-height: 1.7; color: #aaa; }
@@ -81,52 +121,59 @@
         .copyright-text { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.9em; color: #aaa; }
         .copyright-text a { color: inherit; text-decoration: none; transition: color 0.2s; }
         .copyright-text a:hover { color: #fff; }
-
-        @media (max-width: 768px) { .footer-grid { text-align: center; } .support-button, .app-download-container { justify-content: center; } }
     </style>
 </head>
 <body>
-    <div class="notice-bar">যেকোনো প্রোডাক্ট অর্ডার করার ৩০ মিনিটের মধ্যে ডেলিভারি সম্পন্ন করা হয়।</div>
+    <!-- === পরিবর্তিত অংশ: Header এর গঠন আপডেট করা হয়েছে === -->
     <header>
         <div class="header-content">
-            <h1>Osman Topup Career</h1>
+            <div class="shop-title">
+                <h2>Osman Shop Charer</h2>
+            </div>
             <div id="auth-container">
-                <button id="login-signup-btn">লগইন / সাইন আপ</button>
+                <!-- JavaScript will populate this area -->
             </div>
         </div>
     </header>
+
+    <div class="notice-bar"><div class="notice-bar-content">যেকোনো প্রোডাক্ট অর্ডার করার ৩০ মিনিটের মধ্যে ডেলিভারি সম্পন্ন করা হয়।</div></div>
     
     <main>
-        <div id="products-page" class="page active">
-            <h2 class="section-title" style="padding-top: 20px;">App Subscription</h2>
-            <div id="product-list" class="product-grid"><div class="loader-container"><div class="loader"></div></div></div>
+        <div id="products-page" class="page">
+            <h2 class="section-title" style="margin-top:0;">Available Products</h2>
+            <div id="product-list" class="product-grid"></div>
         </div>
+
+        <div id="plan-selection-page" class="page"></div>
+
+        <div id="order-confirmation-page" class="page"></div>
+
         <div id="orders-page" class="page">
-            <h2 class="section-title" style="padding-top: 20px;">My Order History</h2>
+            <h2 class="section-title" style="margin-top:0;">My Order History</h2>
             <div id="orders-container"></div>
         </div>
+
         <div id="profile-page" class="page">
-            <h2 class="section-title" style="padding-top: 20px;">My Profile</h2>
+            <h2 class="section-title" style="margin-top:0;">My Profile</h2>
             <div id="profile-container"></div>
         </div>
     </main>
 
-    <!-- ফুটার আগের মতোই আছে -->
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
                 <h3>STAY CONNECTED</h3>
                 <p>যেকোনো সমস্যায় পড়লে আমাদের WhatsApp-এ যোগাযোগ করুন। আমরা দ্রুত সমাধান দেওয়ার চেষ্টা করব।</p>
                 <div class="social-icons">
-                    <a href="#" title="Facebook"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.32 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 12 2.04Z"/></svg></a>
-                    <a href="#" title="Instagram"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
-                    <a href="#" title="YouTube"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.73,18.78 17.93,18.84C17.13,18.91 16.44,18.94 15.84,18.94L15,19C12.81,19 11.2,18.84 10.17,18.56C9.27,18.31 8.69,17.73 8.44,16.83C8.31,16.36 8.22,15.73 8.16,14.93C8.09,14.13 8.06,13.44 8.06,12.84L8,12C8,9.81 8.16,8.2 8.44,7.17C8.69,6.27 9.27,5.69 10.17,5.44C11.2,5.16 12.81,5 15,5L15.84,5.06C16.44,5.06 17.13,5.09 17.93,5.16C18.73,5.22 19.36,5.31 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"/></svg></a>
+                    <a href="#" id="facebook-link" title="Facebook"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.32 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 12 2.04Z"/></svg></a>
+                    <a href="#" id="instagram-link" title="Instagram"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg></a>
+                    <a href="#" id="youtube-link" title="YouTube"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.73,18.78 17.93,18.84C17.13,18.91 16.44,18.94 15.84,18.94L15,19C12.81,19 11.2,18.84 10.17,18.56C9.27,18.31 8.69,17.73 8.44,16.83C8.31,16.36 8.22,15.73 8.16,14.93C8.09,14.13 8.06,13.44 8.06,12.84L8,12C8,9.81 8.16,8.2 8.44,7.17C8.69,6.27 9.27,5.69 10.17,5.44C11.2,5.16 12.81,5 15,5L15.84,5.06C16.44,5.06 17.13,5.09 17.93,5.16C18.73,5.22 19.36,5.31 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"/></svg></a>
                 </div>
             </div>
             <div class="footer-col">
                 <h3>SUPPORT CENTER</h3>
-                <a href="#" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.6C8.75 21.39 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2Z"/></svg><div class="support-text"><p>WhatsApp HelpLine</p><span>Help line [9AM-12PM]</span></div></a>
-                <a href="#" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg><div class="support-text"><p>টেলিগ্রামে সাপোর্ট</p><span>Help line [9AM-12PM]</span></div></a>
+                <a href="https://wa.me/8801832791849" id="whatsapp-support-link" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.6C8.75 21.39 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2Z"/></svg><div class="support-text"><p>WhatsApp HelpLine</p><span>Help line [9AM-12PM]</span></div></a>
+                <a href="https://t.me/OSMAN_GONI_50" id="telegram-support-link" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg><div class="support-text"><p>টেলিগ্রামে সাপোর্ট</p><span>Help line [9AM-12PM]</span></div></a>
             </div>
             <div class="footer-col">
                 <h3>APP DOWNLOAD</h3>
@@ -136,35 +183,26 @@
                 </div>
             </div>
         </div>
-        <!-- কপিরাইট টেক্সট পরিবর্তিত হয়েছে -->
         <p class="copyright-text">Copyright © 2025 | <a href="https://www.facebook.com/md.osman222" target="_blank" rel="noopener noreferrer">MD OSMAN GONI</a>. All Rights Reserved.</p>
     </footer>
-
-    <!-- অর্ডার করার মোডাল -->
-    <div id="order-modal" class="modal"></div>
-
-    <!-- লগইন/সাইন আপ করার মোডাল -->
+    
     <div id="auth-modal" class="modal">
         <div class="modal-content" id="auth-modal-content">
             <span class="close-button">&times;</span>
-            
-            <!-- Login Form -->
-            <div id="login-form-container" class="form-container active">
+            <div id="login-form-container" class="form-container">
                 <h2>লগইন করুন</h2>
                 <form id="login-form">
                     <label for="login-email">আপনার ইমেইল:</label><input type="email" id="login-email" required>
                     <label for="login-password">পাসওয়ার্ড:</label><input type="password" id="login-password" required>
-                    <p class="forgot-password-link" data-form="forgot">Forgot Password?</p>
+                    <p class="forgot-password-link" data-form="forgot-form-container">Forgot Password?</p>
                     <button type="submit">লগইন</button>
                 </form>
                 <button id="google-login-btn" class="google-btn">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
                     <span>গুগল দিয়ে লগইন করুন</span>
                 </button>
-                <p class="form-switch-link" data-form="signup">অ্যাকাউন্ট নেই? সাইন আপ করুন।</p>
+                <p class="form-switch-link" data-form="signup-form-container">অ্যাকাউন্ট নেই? সাইন আপ করুন।</p>
             </div>
-
-            <!-- Signup Form -->
             <div id="signup-form-container" class="form-container">
                 <h2>নতুন অ্যাকাউন্ট তৈরি করুন</h2>
                 <form id="signup-form">
@@ -174,39 +212,33 @@
                     <label for="signup-password-confirm">কনফার্ম পাসওয়ার্ড:</label><input type="password" id="signup-password-confirm" required>
                     <button type="submit">সাইন আপ</button>
                 </form>
-                 <p class="form-switch-link" data-form="login">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন।</p>
+                 <p class="form-switch-link" data-form="login-form-container">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন।</p>
             </div>
-
-            <!-- Forgot Password Form -->
             <div id="forgot-form-container" class="form-container">
                 <h2>পাসওয়ার্ড রিসেট করুন</h2>
                 <form id="forgot-form">
                     <label for="forgot-email">আপনার রেজিস্টার্ড ইমেইল:</label><input type="email" id="forgot-email" required>
                     <button type="submit">রিসেট লিংক পাঠান</button>
                 </form>
-                <p class="form-switch-link" data-form="login">লগইনে ফিরে যান</p>
+                <p class="form-switch-link" data-form="login-form-container">লগইনে ফিরে যান</p>
             </div>
         </div>
     </div>
     
-    <!-- নেভিগেশন বার -->
     <div class="bottom-nav">
-        <a href="#products-page" class="nav-item active"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/></svg><span>Home</span></a>
+        <a href="#products-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/></svg><span>Home</span></a>
         <a href="#orders-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M9,17H7V15H9V17M13,17H11V15H13V17M17,17H15V15H17V17Z"/></svg><span>My Orders</span></a>
         <a href="#profile-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.33 14.67,14 12,14Z" /></svg><span>Profile</span></a>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
 
     <script>
-        // --- চূড়ান্ত এবং সঠিক জাভাস্ক্রিপ্ট ---
         const firebaseConfig = {
           apiKey: "AIzaSyAFr74mAqFDn_mxAtCGhKX0Tld4TAcep5U",
           authDomain: "osman-topup-career.firebaseapp.com",
-          databaseURL: "https://osman-topup-career-default-rtdb.firebaseio.com",
           projectId: "osman-topup-career",
           storageBucket: "osman-topup-career.appspot.com",
           messagingSenderId: "907318077551",
@@ -218,40 +250,10 @@
         const auth = firebase.auth();
 
         document.addEventListener('DOMContentLoaded', () => {
-            // DOM Elements
-            const productList = document.getElementById('product-list');
-            const ordersContainer = document.getElementById('orders-container');
-            const profileContainer = document.getElementById('profile-container');
-            const orderModal = document.getElementById('order-modal');
-            const authModal = document.getElementById('auth-modal');
-            const authContainer = document.getElementById('auth-container');
-            const navItems = document.querySelectorAll('.nav-item');
             const pages = document.querySelectorAll('.page');
+            const navItems = document.querySelectorAll('.nav-item');
+            const authModal = document.getElementById('auth-modal');
             const loadingSpinner = `<div class="loader-container"><div class="loader"></div></div>`;
-
-            // --- Authentication Logic ---
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    const displayName = user.displayName || user.email.split('@')[0];
-                    authContainer.innerHTML = `
-                        <div id="user-profile-view">
-                            <span>${displayName}</span>
-                            <a href="#profile-page" class="nav-item" data-page="profile-page">
-                                <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:white;"><path d="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.33 14.67,14 12,14Z" /></svg>
-                            </a>
-                        </div>`;
-                    document.querySelector('#user-profile-view a').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        showPage('profile-page');
-                    });
-                } else {
-                    authContainer.innerHTML = `<button id="login-signup-btn">লগইন / সাইন আপ</button>`;
-                    document.getElementById('login-signup-btn').addEventListener('click', () => {
-                        authModal.style.display = 'block';
-                    });
-                }
-                showPage(window.location.hash.substring(1) || 'products-page');
-            });
             
             function getDeviceId() {
                 let deviceId = localStorage.getItem('deviceId');
@@ -261,262 +263,256 @@
                 }
                 return deviceId;
             }
-            const deviceId = getDeviceId();
 
-            function showPage(pageId) {
-                const user = auth.currentUser;
-                // Default to products page if hash is empty or invalid
-                if (!document.getElementById(pageId)) {
+            function showPage(pageId, data = null) {
+                pages.forEach(p => p.classList.remove('active'));
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                } else {
+                    document.getElementById('products-page').classList.add('active');
                     pageId = 'products-page';
                 }
-
-                if ((pageId === 'orders-page' || pageId === 'profile-page') && !user) {
-                    const container = pageId === 'orders-page' ? ordersContainer : profileContainer;
-                    container.innerHTML = `
-                        <div class="auth-prompt">
-                            <h3>এই পেজটি দেখতে অনুগ্রহ করে লগইন করুন।</h3>
-                            <button class="prompt-login-btn">লগইন করুন</button>
-                        </div>`;
-                    document.querySelector('.prompt-login-btn').addEventListener('click', () => authModal.style.display = 'block');
-                } else {
-                    if(pageId === 'orders-page') fetchMyOrders();
-                    if(pageId === 'profile-page') showUserProfile();
-                }
-
-                pages.forEach(p => p.classList.remove('active'));
-                document.getElementById(pageId).classList.add('active');
-                
-                navItems.forEach(item => {
-                    item.classList.toggle('active', item.getAttribute('href') === `#${pageId}`);
-                });
+                navItems.forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${pageId}`));
                 window.location.hash = pageId;
+                renderPageContent(pageId, data);
             }
 
+            function renderPageContent(pageId, data) {
+                const user = auth.currentUser;
+                
+                if (pageId === 'products-page') loadProducts();
+                else if (pageId === 'plan-selection-page' && data) renderPlanSelectionPage(data);
+                else if (pageId === 'order-confirmation-page' && data) renderOrderConfirmationPage(data);
+                else if ((pageId === 'orders-page' || pageId === 'profile-page') && !user) renderAuthPrompt(pageId);
+                else if (pageId === 'orders-page' && user) fetchMyOrders();
+                else if (pageId === 'profile-page' && user) showUserProfile();
+            }
+            
+            async function loadProducts() {
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = loadingSpinner;
+                try {
+                    const snapshot = await db.collection('products').orderBy('name').get();
+                    if (snapshot.empty) { productList.innerHTML = '<p>No products available in the database.</p>'; return; }
+                    let html = snapshot.docs.map(doc => {
+                        const product = doc.data();
+                        return `<div class="product-card" data-name="${product.name}" data-plans='${JSON.stringify(product.plans || [])}' data-image="${product.imageUrl || ''}">
+                            <img src="${product.imageUrl || 'https://via.placeholder.com/150'}">
+                            <h3>${product.name}</h3>
+                        </div>`;
+                    }).join('');
+                    productList.innerHTML = html;
+                } catch (err) { productList.innerHTML = `<p style="color:red;">Error loading products.</p>`; }
+            }
+
+            function renderPlanSelectionPage(data) {
+                const { productName, plans, imageUrl } = data;
+                const pageContainer = document.getElementById('plan-selection-page');
+                let planItemsHTML = plans && plans.length > 0 ? plans.map((plan, index) => 
+                    plan.stock ? `<div class="plan-item-radio">
+                        <input type="radio" id="plan-${index}" name="plan-select-radio" value="${plan.name}" data-price="${plan.price}" required>
+                        <label class="plan-label-radio" for="plan-${index}">
+                            <span class="plan-name">${plan.name}</span>
+                            <span class="plan-price">${plan.price} TK</span>
+                        </label>
+                    </div>` : ''
+                ).join('') : '<p>No plans available.</p>';
+
+                pageContainer.innerHTML = `
+                    <div class="product-header"><img src="${imageUrl}"><div><h3>${productName}</h3><p>Purchase</p></div></div>
+                    <div class="section-header"><span class="step-number">1</span><h4>Select Recharge</h4></div>
+                    <div class="plan-grid">${planItemsHTML}</div>
+                    <button id="next-step-btn" class="next-step-button">Next Step</button>
+                    <button class="back-button">&laquo; Back to Products</button>
+                `;
+                pageContainer.querySelector('.back-button').addEventListener('click', () => showPage('products-page'));
+                pageContainer.querySelector('#next-step-btn').addEventListener('click', () => {
+                    const selectedPlan = document.querySelector('input[name="plan-select-radio"]:checked');
+                    if (!selectedPlan) { alert('Please select a plan.'); return; }
+                    showPage('order-confirmation-page', {
+                        productName, plans, imageUrl,
+                        selectedPlanName: selectedPlan.value,
+                        selectedPlanPrice: selectedPlan.dataset.price
+                    });
+                });
+            }
+
+            function renderOrderConfirmationPage(data) {
+                const { productName, plans, imageUrl, selectedPlanName, selectedPlanPrice } = data;
+                const pageContainer = document.getElementById('order-confirmation-page');
+
+                pageContainer.innerHTML = `
+                    <h2 class="section-title" style="margin-top:0;">Confirm Your Order</h2>
+                    <p style="text-align: center; font-size: 1.1em; margin-bottom: 20px;">You have selected: <strong>${productName} - ${selectedPlanName} (${selectedPlanPrice} TK)</strong></p>
+                    <div class="order-notice">⚠️ <strong>দ্রষ্টব্য:</strong><br>দয়া করে আপনার সঠিক ইমেইল ঠিকানা প্রদান করুন। ভুল ইমেইল দিলে অর্ডার সম্পূর্ণ করা যাবে না। সমস্ত ডেলিভারি তথ্য ইমেইলের মাধ্যমে পাঠানো হবে।</div>
+                    <div class="payment-info" style="margin-top: 20px;"><h4>নিচের নম্বরে ${selectedPlanPrice} টাকা সেন্ড মানি করুন</h4><p class="payment-number">01832791849</p><small>(বিকাশ / নগদ)</small></div>
+                    <form id="order-form" style="margin-top: 20px;">
+                        <input type="hidden" id="product-name" value="${productName}">
+                        <input type="hidden" id="package-name" value="${selectedPlanName}">
+                        <label for="customer-email">আপনার ইমেইল:</label>
+                        <input type="email" id="customer-email" required value="${auth.currentUser?.email || ''}">
+                        <label for="transaction-id">ট্রানজেকশন আইডি:</label>
+                        <input type="text" id="transaction-id" required>
+                        <button type="submit" class="next-step-button" style="margin-top: 10px;">Confirm Order</button>
+                    </form>
+                    <button id="order-back-btn" class="back-button">&laquo; Back to Plan Selection</button>
+                `;
+
+                pageContainer.querySelector('#order-form').addEventListener('submit', handleOrderSubmit);
+                pageContainer.querySelector('#order-back-btn').addEventListener('click', () => {
+                    showPage('plan-selection-page', { productName, plans, imageUrl });
+                });
+            }
+
+            function renderAuthPrompt(pageId) {
+                const containerId = pageId === 'orders-page' ? 'orders-container' : 'profile-container';
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `<div class="auth-prompt">
+                        <h3>এই পেজটি দেখতে অনুগ্রহ করে লগইন করুন।</h3>
+                        <button class="prompt-login-btn">লগইন / সাইন আপ</button>
+                    </div>`;
+                    container.querySelector('.prompt-login-btn').addEventListener('click', () => {
+                        authModal.style.display = 'block';
+                    });
+                }
+            }
+            
+            document.querySelector('main').addEventListener('click', e => {
+                const productCard = e.target.closest('.product-card');
+                if (productCard) {
+                    const data = {
+                        productName: productCard.dataset.name,
+                        plans: JSON.parse(productCard.dataset.plans),
+                        imageUrl: productCard.dataset.image
+                    };
+                    showPage('plan-selection-page', data);
+                }
+            });
+
             navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
+                item.addEventListener('click', e => {
                     e.preventDefault();
                     showPage(item.getAttribute('href').substring(1));
                 });
             });
 
-            async function showUserProfile() {
-                const user = auth.currentUser;
-                if(user) {
-                    profileContainer.innerHTML = loadingSpinner;
-                    try {
-                        const ordersSnapshot = await db.collection('orders').where('userId', '==', user.uid).get();
-                        const orderCount = ordersSnapshot.size;
-                        const name = user.displayName || 'ব্যবহারকারীর নাম';
-                        
-                        profileContainer.innerHTML = `
-                        <div class="profile-card">
-                            <h3>
-                                <span>${name}</span>
-                                <span class="verification-badge">
-                                    <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-                                </span>
-                            </h3>
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>মোট অর্ডার:</strong> ${orderCount}</p>
-                            <button id="logout-button">লগ আউট</button>
-                        </div>`;
-                        document.getElementById('logout-button').addEventListener('click', () => {
-                            auth.signOut();
-                        });
-
-                    } catch(error) {
-                        profileContainer.innerHTML = `<p style="color:red;">প্রোফাইল লোড করা যায়নি।</p>`;
-                    }
-                }
-            }
-            
-            // --- Auth Modal Logic (Updated) ---
-            const authModalContent = document.getElementById('auth-modal-content');
-            authModal.querySelector('.close-button').onclick = () => authModal.style.display = 'none';
-            
-            function switchAuthForm(targetFormId) {
-                authModalContent.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
-                authModalContent.querySelector(`#${targetFormId}-container`).classList.add('active');
-            }
-
-            authModalContent.addEventListener('click', e => {
-                if(e.target.classList.contains('form-switch-link') || e.target.classList.contains('forgot-password-link')) {
-                    switchAuthForm(e.target.dataset.form + '-form');
-                }
-            });
-
-            // Email/Pass Login
-            document.getElementById('login-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const pass = document.getElementById('login-password').value;
-                try {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    authModal.style.display = 'none';
-                } catch (error) {
-                    alert("লগইন ব্যর্থ হয়েছে: " + error.message);
-                }
-            });
-
-            // Email/Pass Sign Up
-            document.getElementById('signup-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('signup-name').value;
-                const email = document.getElementById('signup-email').value;
-                const pass = document.getElementById('signup-password').value;
-                const passConfirm = document.getElementById('signup-password-confirm').value;
-
-                if (pass !== passConfirm) {
-                    alert("পাসওয়ার্ড দুটি মেলেনি।");
-                    return;
-                }
-                try {
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                    await userCredential.user.updateProfile({ displayName: name });
-                    authModal.style.display = 'none';
-                } catch (error) {
-                    alert("সাইন আপ ব্যর্থ হয়েছে: " + error.message);
-                }
-            });
-
-            // Google Login
-            document.getElementById('google-login-btn').addEventListener('click', async () => {
-                 const provider = new firebase.auth.GoogleAuthProvider();
-                try {
-                    await auth.signInWithPopup(provider);
-                    authModal.style.display = 'none';
-                } catch (error) {
-                     alert("গুগল লগইন ব্যর্থ হয়েছে: " + error.message);
-                }
-            });
-
-            // Forgot Password Logic
-            document.getElementById('forgot-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('forgot-email').value;
-                try {
-                    await auth.sendPasswordResetEmail(email);
-                    alert('পাসওয়ার্ড রিসেট লিংক আপনার ইমেইলে পাঠানো হয়েছে!');
-                    switchAuthForm('login-form');
-                } catch(error) {
-                    alert('ইমেইল পাঠাতে সমস্যা হয়েছে: ' + error.message);
-                }
-            });
-
-
-            window.onclick = (e) => { 
-                if (e.target == orderModal) orderModal.style.display = 'none';
-                if (e.target == authModal) authModal.style.display = 'none';
-            };
-            
-            function loadProducts() {
-                db.collection('products').orderBy('name').onSnapshot(snapshot => {
-                    if (snapshot.empty) { productList.innerHTML = '<p>No products available.</p>'; return; }
-                    let html = '';
-                    snapshot.forEach(doc => {
-                        const product = doc.data();
-                        const priceText = product.plans && product.plans.length > 0 ? `Starts at ৳${product.plans[0].price}` : '';
-                        html += `
-                        <div class="product-card">
-                            <h3>${product.name}</h3>
-                            <div class="price">${priceText}</div>
-                            <button class="buy-button" data-name="${product.name}" data-plans='${JSON.stringify(product.plans || [])}'>Buy Now</button>
-                        </div>`;
+            // === পরিবর্তিত অংশ: onAuthStateChanged এর লজিক আপডেট করা হয়েছে ===
+            auth.onAuthStateChanged(user => {
+                const authContainer = document.getElementById('auth-container');
+                if (user) {
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    authContainer.innerHTML = `
+                        <span>${displayName}</span>
+                        <a href="#profile-page" class="profile-icon">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.33 14.67,14 12,14Z" /></svg>
+                        </a>`;
+                } else {
+                    authContainer.innerHTML = `<button id="login-signup-btn">লগইন / সাইন আপ</button>`;
+                    document.getElementById('login-signup-btn').addEventListener('click', () => {
+                        authModal.style.display = 'block';
                     });
-                    productList.innerHTML = html;
-                }, err => { productList.innerHTML = '<p style="color:red;">Could not load products.</p>'; });
-            }
-            function showOrderModal(productName, plans) {
-                const modalHTML = `
-                    <div class="modal-content">
-                        <div class="modal-header"><h2 id="modal-title">Order ${productName}</h2><span class="close-button">&times;</span></div>
-                        <div class="payment-info"><h4>নিচের নম্বরে সেন্ড মানি করুন</h4><p class="payment-number">01832791849</p><small>(বিকাশ / নগদ)</small></div>
-                        <form id="order-form">
-                            <input type="hidden" id="product-name" value="${productName}">
-                            <label>প্ল্যান বাছাই করুন:</label><select id="plan-select" required></select>
-                            <label>আপনার ইমেইল:</label><input type="email" id="customer-email" required placeholder="example@gmail.com" value="${auth.currentUser?.email || ''}">
-                            <label>আপনার ফোন নম্বর:</label><input type="tel" id="customer-phone" required placeholder="01xxxxxxxxx">
-                            <label>ট্রানজেকশন আইডি:</label><input type="text" id="transaction-id" required placeholder="Bkash/Nagad TrxID দিন">
-                            <button type="submit">অর্ডার কনফার্ম করুন</button>
-                        </form>
-                    </div>`;
-                orderModal.innerHTML = modalHTML;
-
-                const planSelect = orderModal.querySelector('#plan-select');
-                planSelect.innerHTML = '<option value="" disabled selected>Select a plan</option>';
-                plans.forEach(plan => { if (plan.stock) planSelect.innerHTML += `<option value="${plan.name}">${plan.name} - ${plan.price} BDT</option>`; });
-                
-                orderModal.style.display = 'block';
-                orderModal.querySelector('.close-button').onclick = () => orderModal.style.display = 'none';
-                orderModal.querySelector('#order-form').addEventListener('submit', handleOrderSubmit);
-            }
-             productList.addEventListener('click', e => {
-                if (e.target.classList.contains('buy-button')) {
-                    showOrderModal(e.target.dataset.name, JSON.parse(e.target.dataset.plans));
+                }
+                const currentPage = window.location.hash.substring(1) || 'products-page';
+                if (!currentPage.startsWith('plan-selection') && !currentPage.startsWith('order-confirmation')) {
+                    renderPageContent(currentPage, null);
                 }
             });
+            
+            async function fetchMyOrders() {
+                const container = document.getElementById('orders-container');
+                container.innerHTML = loadingSpinner;
+                try {
+                    const snapshot = await db.collection('orders').where('userId', '==', auth.currentUser.uid).orderBy('createdAt', 'desc').get();
+                    if (snapshot.empty) { container.innerHTML = '<p>You have not placed any orders yet.</p>'; return; }
+                    let html = snapshot.docs.map(doc => {
+                        const order = doc.data();
+                        const date = new Date(order.createdAt.toDate()).toLocaleString('bn-BD');
+                        const statusColor = order.status === 'Completed' ? 'var(--success-color)' : (order.status === 'Pending' ? 'var(--pending-color)' : 'var(--danger-color)');
+                        return `<div class="order-item" style="border-left-color: ${statusColor};">
+                                    <h4>${order.productName} (${order.packageName})</h4>
+                                    <p><strong>Order ID:</strong> ${doc.id}</p>
+                                    <p><strong>Date:</strong> ${date}</p>
+                                    <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
+                                </div>`;
+                    }).join('');
+                    container.innerHTML = html;
+                } catch (err) { container.innerHTML = `<p style="color:red;">Could not load orders.</p>`; }
+            }
+
+            async function showUserProfile() {
+                const container = document.getElementById('profile-container');
+                container.innerHTML = loadingSpinner;
+                try {
+                    const ordersSnapshot = await db.collection('orders').where('userId', '==', auth.currentUser.uid).get();
+                    const orderCount = ordersSnapshot.size;
+                    const name = auth.currentUser.displayName || 'ব্যবহারকারীর নাম';
+                    container.innerHTML = `<div class="profile-card"><h3><span>${name}</span><span class="verification-badge"><svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></span></h3><p><strong>Email:</strong> ${auth.currentUser.email}</p><p><strong>মোট অর্ডার:</strong> ${orderCount}</p><button id="logout-button"><svg viewBox="0 0 24 24"><path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z"></path></svg><span>লগ আউট</span></button></div>`;
+                    container.querySelector('#logout-button').addEventListener('click', () => auth.signOut());
+                } catch(error) { container.innerHTML = `<p style="color:red;">প্রোফাইল লোড করা যায়নি।</p>`; }
+            }
+
             async function handleOrderSubmit(e) {
                 e.preventDefault();
                 const form = e.target;
                 const submitButton = form.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Ordering...';
+                submitButton.disabled = true; submitButton.textContent = 'Ordering...';
                 
                 const orderData = {
                     productName: form.querySelector('#product-name').value,
-                    packageName: form.querySelector('#plan-select').value,
+                    packageName: form.querySelector('#package-name').value,
                     customerEmail: form.querySelector('#customer-email').value,
-                    customerPhone: form.querySelector('#customer-phone').value,
                     transactionId: form.querySelector('#transaction-id').value,
-                    status: 'Pending',
-                    createdAt: new Date(),
-                    ...(auth.currentUser ? { userId: auth.currentUser.uid } : { deviceId: deviceId })
+                    status: 'Pending', createdAt: new Date(),
+                    ...(auth.currentUser ? { userId: auth.currentUser.uid } : { deviceId: getDeviceId() })
                 };
 
                 try {
-                    const docRef = await db.collection('orders').add(orderData);
-                    alert(`Order successful! Your Order ID is: ${docRef.id}`);
-                    form.reset();
-                    orderModal.style.display = 'none';
+                    await db.collection('orders').add(orderData);
+                    alert('Order successful!\n\nঅর্ডার স্ট্যাটাস দেখতে, মেনুতে “মাই অর্ডার” বাটনে ক্লিক করুন।');
+                    if (auth.currentUser) {
+                        showPage('orders-page');
+                    } else {
+                        showPage('products-page');
+                    }
                 } catch (err) {
-                    alert('Order failed. Please try again.');
+                    alert('Order failed. Please try again. Error: ' + err.message);
                 } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Confirm Order';
+                    submitButton.disabled = false; submitButton.textContent = 'Confirm Order';
                 }
             }
-             async function fetchMyOrders() {
-                ordersContainer.innerHTML = loadingSpinner;
-                const user = auth.currentUser;
-                if (!user) return; 
+            
+            const authModalContent = document.getElementById('auth-modal-content');
+            authModal.querySelector('.close-button').onclick = () => { authModal.style.display = 'none'; switchAuthForm('login-form-container'); };
+            function switchAuthForm(targetFormId) {
+                authModalContent.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
+                authModalContent.querySelector(`#${targetFormId}`).classList.add('active');
+            }
+            switchAuthForm('login-form-container');
+            authModalContent.addEventListener('click', e => { if(e.target.classList.contains('form-switch-link') || e.target.classList.contains('forgot-password-link')) { e.preventDefault(); switchAuthForm(e.target.dataset.form); } });
+            document.getElementById('login-form').addEventListener('submit', e => { e.preventDefault(); auth.signInWithEmailAndPassword(e.target.elements['login-email'].value, e.target.elements['login-password'].value).then(() => {authModal.style.display = 'none'; switchAuthForm('login-form-container');}).catch(err => alert("Login Failed: " + err.message)); });
+            document.getElementById('signup-form').addEventListener('submit', e => { e.preventDefault(); const pass = e.target.elements['signup-password'].value; if (pass !== e.target.elements['signup-password-confirm'].value) { alert("Passwords do not match."); return; } auth.createUserWithEmailAndPassword(e.target.elements['signup-email'].value, pass).then(cred => cred.user.updateProfile({displayName: e.target.elements['signup-name'].value})).then(() => {authModal.style.display = 'none'; switchAuthForm('login-form-container');}).catch(err => alert("Signup Failed: " + err.message)); });
+            document.getElementById('google-login-btn').addEventListener('click', () => { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => {authModal.style.display = 'none'; switchAuthForm('login-form-container');}).catch(err => alert("Google Login Failed: " + err.message)); });
+            document.getElementById('forgot-form').addEventListener('submit', e => { e.preventDefault(); auth.sendPasswordResetEmail(e.target.elements['forgot-email'].value).then(() => { alert('Password reset email sent!'); switchAuthForm('login-form-container'); }).catch(err => alert("Error: " + err.message)); });
 
+            window.onclick = e => { if (e.target == authModal) { authModal.style.display = 'none'; switchAuthForm('login-form-container'); } };
+            
+            async function loadDynamicSettings() {
                 try {
-                    const snapshot = await db.collection('orders')
-                        .where('userId', '==', user.uid)
-                        .orderBy('createdAt', 'desc')
-                        .get();
-                    
-                    if (snapshot.empty) { ordersContainer.innerHTML = '<p>You have not placed any orders yet.</p>'; return; }
-                    let html = '';
-                    snapshot.forEach(doc => {
-                        const order = doc.data();
-                        const date = new Date(order.createdAt.toDate()).toLocaleString('bn-BD');
-                        html += `
-                        <div class="order-item" style="border-left-color: ${order.status === 'Completed' ? 'var(--success-color)' : (order.status === 'Pending' ? 'var(--pending-color)' : 'var(--danger-color)')};">
-                            <h4>${order.productName} (${order.packageName})</h4>
-                            <p><strong>Order ID:</strong> ${doc.id}</p>
-                            <p><strong>Date:</strong> ${date}</p>
-                            <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
-                        </div>`;
-                    });
-                    ordersContainer.innerHTML = html;
-                } catch (err) {
-                    ordersContainer.innerHTML = `<p style="color:red;">Could not load orders.</p>`;
-                }
+                    const doc = await db.collection('settings').doc('links').get();
+                    if (doc.exists) {
+                        const links = doc.data();
+                        if (links.facebook) document.getElementById('facebook-link').href = links.facebook;
+                        if (links.instagram) document.getElementById('instagram-link').href = links.instagram;
+                        if (links.youtube) document.getElementById('youtube-link').href = links.youtube;
+                    }
+                } catch (error) { console.error("Error loading settings: ", error); }
             }
 
-            // Initial Load
-            loadProducts();
+            const initialPage = window.location.hash.substring(1) || 'products-page';
+            showPage(initialPage);
+            loadDynamicSettings();
         });
     </script>
 </body>
