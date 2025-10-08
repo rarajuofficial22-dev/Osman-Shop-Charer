@@ -1,309 +1,429 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Osman Shop Charer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Osman Shop Charer</title>
     <style>
         :root { --primary-color: #4a148c; --secondary-color: #5e35b1; --success-color: #4CAF50; --pending-color: #ff9800; --danger-color: #f44336; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px 20px 80px 20px; }
-        .container { max-width: 800px; margin: auto; }
-        h2 { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-top: 0; }
-        #auth-section, .management-section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        input, select, button, textarea { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; }
-        button { cursor: pointer; border: none; font-weight: bold; color: white; background-color: var(--success-color); }
-        textarea { min-height: 100px; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-item { flex: 1; padding: 15px 5px; color: #757575; border: none; background: transparent; cursor: pointer; font-size: 0.8em; white-space: nowrap; }
-        .nav-item.active { color: var(--primary-color); font-weight: bold; border-top: 3px solid var(--primary-color); }
-        .management-section { display: none; }
-        .management-section.active { display: block; }
-        .list-item { background: #fdfdff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; word-wrap: break-word; }
-        .list-item p { margin: 5px 0; }
-        .item-actions { margin-top: 15px; display: flex; gap: 10px; }
-        .item-actions button { font-size: 0.9em; padding: 8px 12px; width: auto; }
-        .plan-entry { border: 1px dashed #ddd; padding: 15px; margin-bottom: 10px; background: #fafafa; border-radius: 5px; }
-        #logout-btn { background-color: var(--danger-color); }
-        .form-container { display:none; margin-top:20px; }
-        .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-container input { width: 70%; margin-bottom: 0; }
-        .search-container button { width: 30%; margin-bottom: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding-top: 90px; padding-bottom: 70px; }
+        header { background: linear-gradient(90deg, var(--primary-color), #880e4f); color: white; padding: 10px 20px; position: fixed; top: 0; width: calc(100% - 40px); z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .shop-title h2 { margin: 0; font-size: 1.2em; font-weight: bold; }
+        #auth-container { display: flex; align-items: center; gap: 10px; }
+        .header-icon { background-color: var(--secondary-color); border-radius: 8px; padding: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; position: relative; cursor: pointer; }
+        .header-icon svg { width: 24px; height: 24px; fill: white; }
+        #auth-container button { background-color: white; color: var(--primary-color); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background-color: var(--danger-color); color: white; border-radius: 50%; width: 10px; height: 10px; display: none; }
+        .notice-bar { background-color: #fffbe7; color: #856404; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9em; position: fixed; top: 52px; width: 100%; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; overflow: hidden; }
+        .notice-bar-content { margin: 0; display: inline-block; padding-left: 100%; animation: marquee 18s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to: { opacity: 1; } }
         .loader-container { display: flex; justify-content: center; align-items: center; padding: 50px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .product-card { background-color: white; border: 1px solid #ddd; border-radius: 10px; text-align: center; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; }
+        .product-card img { width: 100%; height: 120px; margin-bottom: 10px; border-radius: 8px; object-fit: cover; }
+        .product-card h3 { margin: 0; color: #333; font-size: 1em; font-weight: 500; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; text-decoration: none; padding: 5px 0; }
+        .nav-item svg { width: 24px; height: 24px; margin-bottom: 2px; }
+        .nav-item span { font-size: 0.8em; }
+        .nav-item.active { color: var(--primary-color); }
+        .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 10px; }
+        .close-button { color: #aaa; float: right; font-size: 32px; font-weight: bold; cursor: pointer; }
+        form label { display: block; margin-bottom: 10px; font-weight: bold; text-align: left; }
+        form input { width: calc(100% - 24px); padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        form button { width: 100%; background-color: var(--success-color); color: white; padding: 14px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        #orders-container .order-item, #notifications-container .notification-item { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .order-item { border-left: 6px solid; }
+        .order-item h4, .notification-item h4 { margin: 0 0 5px 0; }
+        .order-item p, .notification-item p { margin: 4px 0; color: #555; word-wrap: break-word; }
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.9em; color: white; display: inline-block; }
+        #plan-selection-page .product-header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        #plan-selection-page .product-header img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .plan-item-radio input[type="radio"] { opacity: 0; position: absolute; }
+        .plan-item-radio .plan-label-radio { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; background: white; }
+        .plan-item-radio .plan-label-radio .plan-price { font-weight: bold; color: var(--danger-color); margin-top: 5px; }
+        .plan-item-radio input[type="radio"]:checked + .plan-label-radio { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(74,20,140,0.5); }
+        .next-step-button { width: 100%; padding: 15px; background-color: var(--success-color); color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; }
+        .back-button { background: none; border: none; color: var(--primary-color); margin-top: 15px; cursor: pointer; display: block; text-align: center; width: 100%; }
+        #auth-modal-content .form-container { display: none; }
+        #auth-modal-content .form-container.active { display: block; }
+        .form-switch-link { text-align: center; margin-top: 15px; cursor: pointer; color: var(--secondary-color); }
+        #profile-container, #orders-container, #deposit-page, #notifications-page { min-height: 200px; }
+        #profile-container .profile-card, .auth-prompt { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        #profile-container h3 { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.8em; margin-bottom: 10px; }
+        #logout-button { background-color: var(--danger-color); margin-top: 20px; width: 100%; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; }
+        .auth-prompt button { margin-top: 20px; background-color: var(--primary-color); color: white; padding: 12px 25px; border-radius: 5px; cursor: pointer; }
+        .section-title { font-size: 1.5em; color: #333; margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
+        .balance-display { background: var(--secondary-color); color: white; padding: 15px; border-radius: 8px; margin: 10px 0 20px; }
+        .balance-display h4 { margin: 0; font-size: 1em; opacity: 0.8; }
+        .balance-display p { margin: 5px 0 0; font-size: 1.8em; font-weight: bold; }
+        #purchase-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        footer { background-color: #0c1446; color: #e0e0e0; padding: 50px 20px 20px; text-align: center; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; text-align: left; max-width: 1100px; margin: 0 auto; }
+        .footer-col h3 { color: white; }
+        .footer-col p { color: #aaa; }
+        .social-icons a { display: inline-block; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 10px; margin: 5px; }
+        .social-icons svg { width: 24px; height: 24px; fill: white; }
+        .support-button { display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 12px 15px; text-decoration: none; color: #e0e0e0; margin-bottom: 15px; }
+        .support-button svg { width: 28px; height: 28px; fill: white; margin-right: 15px; }
+        .support-text { border-left: 1px solid rgba(255, 255, 255, 0.3); padding-left: 15px; }
+        .copyright-text { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); color: #aaa; }
+        .step-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-top: 4px solid var(--secondary-color); }
+        .step-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .step-number { background-color: var(--primary-color); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em; font-weight: bold; flex-shrink: 0; }
+        .step-box h3 { margin: 0; color: var(--primary-color); font-size: 1.4em; }
+        .step-box p { text-align: left; color: #555; line-height: 1.6; margin-bottom: 20px; }
+        .payment-method-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .payment-method-btn { padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: white; flex: 1; text-align: center; display: flex; justify-content: center; align-items: center; height: 50px; }
+        .payment-method-btn img { max-height: 100%; max-width: 100px; }
+        .payment-method-btn.selected { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(74,20,140,0.5); }
+        #payment-instructions { padding: 20px; border-radius: 10px; margin-top: 20px; }
+        #payment-instructions ul { list-style: none; padding-left: 0; text-align: left; font-size: 0.9em; line-height: 1.6; }
+        #payment-instructions li { margin-bottom: 12px; }
+        .copy-btn { background: white; color: var(--primary-color); border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .payment-product-info { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;}
+        .payment-product-info img { max-width: 80px; border-radius: 8px; margin-bottom: 10px; }
+        .payment-product-info h4 { margin: 0; font-size: 1.2em; }
+        .payment-product-info p { margin: 5px 0 0; font-size: 1.1em; color: var(--danger-color); font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="container">
-    <div id="auth-section"><h2>Admin Login</h2><input type="email" id="admin-email" placeholder="Email"><input type="password" id="admin-password" placeholder="Password"><button id="admin-login-btn">Login</button></div>
-    <div id="admin-section" style="display:none;">
-        <div id="deposit-management" class="management-section"><h2>Deposit Requests</h2><div id="admin-deposit-list"></div></div>
-        <div id="order-management" class="management-section"><h2>All Orders</h2><div id="admin-order-list"></div></div>
-        <div id="user-management" class="management-section"><h2>Users</h2><div class="search-container"><input type="email" id="user-search-email" placeholder="Search by email"><button id="user-search-btn">Search</button></div><div id="admin-user-list"></div></div>
-        <div id="notification-management" class="management-section">
-            <h2>Send Notification</h2>
-            <div id="notification-form">
-                <label for="notification-recipient">Recipient:</label>
-                <select id="notification-recipient"><option value="all">All Users</option><option value="specific">Specific User</option></select>
-                <input type="email" id="notification-user-email" placeholder="Enter user's email" style="display:none; margin-top: 10px;">
-                <label for="notification-title">Title:</label>
-                <input type="text" id="notification-title" placeholder="Notification Title">
-                <label for="notification-message">Message:</label>
-                <textarea id="notification-message" placeholder="Write your message here..."></textarea>
-                <button id="send-notification-btn">Send Notification</button>
+    <header>
+        <div class="header-content">
+            <div class="shop-title"><h2>Osman Shop Charer</h2></div>
+            <div id="auth-container"></div>
+        </div>
+    </header>
+    <div class="notice-bar"><div class="notice-bar-content">যেকোনো প্রোডাক্ট অর্ডার করার ৩০ মিনিটের মধ্যে ডেলিভারি সম্পন্ন করা হয়।</div></div>
+    <main>
+        <div id="products-page" class="page active"><h2 class="section-title" style="margin-top:0;">Available Products</h2><div id="product-list" class="product-grid"></div></div>
+        <div id="plan-selection-page" class="page"></div>
+        <div id="deposit-page" class="page">
+             <h2 class="section-title" style="margin-top:0;">Add Balance</h2>
+            <div class="step-box">
+                <div class="step-header"><span class="step-number">১</span><h3>টাকার পরিমাণ লিখুন</h3></div>
+                <p>আপনি কত টাকা যোগ করতে চান তা নিচের বক্সে লিখুন (সর্বনিম্ন ৫০ থেকে ২৫,০০০ পর্যন্ত)।</p>
+                <input type="number" id="custom-deposit-amount" placeholder="e.g., 500" min="50" max="25000" style="width: calc(100% - 30px); padding: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 1.2em; text-align: center; margin-top: 10px;">
+                <button id="deposit-proceed-btn" class="next-step-button" style="margin-top: 20px; background-color: var(--primary-color);">পেমেন্টের জন্য এগিয়ে যান</button>
             </div>
         </div>
-        <div id="product-management" class="management-section"><h2>Products</h2><div id="admin-product-list"></div><button id="show-add-product-btn">+ Add Product</button><div id="product-form-container"></div></div>
-        <div id="profile-management" class="management-section"><h2>Profile</h2><p id="admin-user-email"></p><button id="logout-btn">Logout</button></div>
+        <div id="orders-page" class="page"><h2 class="section-title" style="margin-top:0;">My Order History</h2><div id="orders-container"></div></div>
+        <div id="notifications-page" class="page"><h2 class="section-title" style="margin-top:0;">My Notifications</h2><div id="notifications-container"></div></div>
+        <div id="profile-page" class="page"><h2 class="section-title" style="margin-top:0;">My Profile</h2><div id="profile-container"></div></div>
+    </main>
+    <footer id="footer">
+        <div class="footer-grid">
+            <div class="footer-col"><h3>STAY CONNECTED</h3><p>যেকোনো সমস্যায় পড়লে আমাদের WhatsApp-এ যোগাযোগ করুন।</p><div class="social-icons"><a href="https://www.facebook.com/md.osman222"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06 2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.32 11.93 5.96 14.22 5.96 15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 12 2.04Z"/></svg></a></div></div>
+            <div class="footer-col"><h3>SUPPORT CENTER</h3><a href="https://wa.me/8801832791849" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.6C8.75 21.39 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2Z"/></svg><div class="support-text"><p>WhatsApp</p></div></a><a href="https://t.me/OSMAN_GONI_50" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg><div class="support-text"><p>Telegram</p></div></a></div>
+        </div>
+        <p class="copyright-text">Copyright © 2025 | <a href="https://www.facebook.com/md.osman222" target="_blank">MD OSMAN GONI</a></p>
+    </footer>
+    <div id="auth-modal" class="modal">
+        <div class="modal-content" id="auth-modal-content">
+            <span class="close-button">&times;</span>
+            <div id="login-form-container" class="form-container active"><h2>লগইন</h2><form id="login-form"><label>ইমেইল:</label><input type="email" id="login-email" required><label>পাসওয়ার্ড:</label><input type="password" id="login-password" required><button type="submit">লগইন</button></form><p class="form-switch-link" data-form="signup-form-container">অ্যাকাউন্ট নেই? সাইন আপ করুন।</p></div>
+            <div id="signup-form-container" class="form-container"><h2>নতুন অ্যাকাউন্ট</h2><form id="signup-form"><label>নাম:</label><input type="text" id="signup-name" required><label>ইমেইল:</label><input type="email" id="signup-email" required><label>পাসওয়ার্ড:</label><input type="password" id="signup-password" required><button type="submit">সাইন আপ</button></form><p class="form-switch-link" data-form="login-form-container">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন।</p></div>
+        </div>
     </div>
-</div>
-<div id="admin-nav" class="bottom-nav" style="display: none;">
-    <button class="nav-item" data-target="deposit-management">Deposits</button>
-    <button class="nav-item" data-target="order-management">Orders</button>
-    <button class="nav-item" data-target="user-management">Users</button>
-    <button class="nav-item" data-target="notification-management">Notify</button>
-    <button class="nav-item" data-target="product-management">Products</button>
-    <button class="nav-item" data-target="profile-management">Profile</button>
-</div>
-<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-<script>
-    const firebaseConfig = { apiKey: "AIzaSyAFr74mAqFDn_mxAtCGhKX0Tld4TAcep5U", authDomain: "osman-topup-career.firebaseapp.com", projectId: "osman-topup-career", storageBucket: "osman-topup-career.appspot.com", messagingSenderId: "907318077551", appId: "1:907318077551:web:acb76049a46d3ab1f1059a" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const ADMIN_UIDS = ["g37yEOxRrSRoLIyPZdHCaIAoAwc2"]; 
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const authSection = document.getElementById('auth-section');
-        const adminSection = document.getElementById('admin-section');
-        const adminNav = document.getElementById('admin-nav');
-        const loadingSpinner = `<div class="loader-container"><div class="loader"></div></div>`;
+    <div id="manual-payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="payment-modal-close">&times;</span>
+            <div id="payment-modal-content"></div>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="#products-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/></svg><span>Home</span></a>
+        <a href="#deposit-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M18,15V13H16V15H18M18,11V9H16V11H18M18,7V5H16V7H18M20,19V3A2,2 0 0,0 18,1H6A2,2 0 0,0 4,3V19A2,2 0 0,0 6,21H18A2,2 0 0,0 20,19M8,11H14V13H8V11M8,15H14V17H8V15M8,7H14V9H8V7Z"/></svg><span>Deposit</span></a>
+        <a href="#orders-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.89,3 3,3.89,3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3M9,17H7V15H9V17M13,17H11V15H13V17M17,17H15V15H17V17Z"/></svg><span>My Orders</span></a>
+        <a href="#notifications-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,22A2,2 0 0,0 14,20H10A2,2 0 0,0 12,22M18,16.5V11C18,7.93 16.36,5.36 13.5,4.68V4A1.5,1.5 0 0,0 12,2.5A1.5,1.5 0 0,0 10.5,4V4.68C7.63,5.36 6,7.93 6,11V16.5L4,18V19H20V18L18,16.5Z"/></svg><span>Notifications</span></a>
+        <a href="#profile-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.33 14.67,14 12,14Z"/></svg><span>Profile</span></a>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAFr74mAqFDn_mxAtCGhKX0Tld4TAcep5U", authDomain: "osman-topup-career.firebaseapp.com", projectId: "osman-topup-career", storageBucket: "osman-topup-career.appspot.com", messagingSenderId: "907318077551", appId: "1:907318077551:web:acb76049a46d3ab1f1059a" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        function showSection(targetId) {
-            document.querySelectorAll('.management-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelector(`.nav-item[data-target="${targetId}"]`).classList.add('active');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const pages = document.querySelectorAll('.page');
+            const navItems = document.querySelectorAll('.nav-item');
+            const authModal = document.getElementById('auth-modal');
+            const paymentModal = document.getElementById('manual-payment-modal');
+            const loadingSpinner = `<div class="loader-container"><div class="loader"></div></div>`;
+            let currentPayment = {};
 
-        auth.onAuthStateChanged(user => {
-            if (user && ADMIN_UIDS.includes(user.uid)) {
-                authSection.style.display = 'none';
-                adminSection.style.display = 'block';
-                adminNav.style.display = 'flex';
-                document.getElementById('admin-user-email').innerText = `Logged in: ${user.email}`;
-                loadInitialData();
-                showSection('deposit-management');
-            } else {
-                authSection.style.display = 'block';
-                adminSection.style.display = 'none';
-                adminNav.style.display = 'none';
+            function showPage(pageId, data = null) {
+                pages.forEach(p => p.classList.remove('active'));
+                const targetPage = document.getElementById(pageId) || document.getElementById('products-page');
+                targetPage.classList.add('active');
+                pageId = targetPage.id;
+                navItems.forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${pageId}`));
+                if (!pageId.startsWith('plan-selection')) window.location.hash = pageId;
+                renderPageContent(pageId, data);
             }
-        });
 
-        function loadInitialData() {
-            loadDepositsForAdmin();
-            loadOrdersForAdmin();
-            loadUsersForAdmin();
-            loadProductsForAdmin();
-        }
-
-        document.getElementById('admin-login-btn').addEventListener('click', () => auth.signInWithEmailAndPassword(document.getElementById('admin-email').value, document.getElementById('admin-password').value).catch(err => alert(err.message)));
-        document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
-        document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => showSection(btn.dataset.target)));
-        document.getElementById('user-search-btn').addEventListener('click', () => {
-            const email = document.getElementById('user-search-email').value.trim();
-            loadUsersForAdmin(email);
-        });
-
-        async function loadDepositsForAdmin() {
-            const list = document.getElementById('admin-deposit-list');
-            list.innerHTML = loadingSpinner;
-            try {
-                const snap = await db.collection('deposits').where('status', '==', 'verification_pending').orderBy('createdAt', 'desc').get();
-                if (snap.empty) { list.innerHTML = '<p>No pending deposit requests.</p>'; return; }
-                list.innerHTML = snap.docs.map(doc => {
-                    const d = doc.data();
-                    return `<div class="list-item"><p><strong>User:</strong> ${d.userEmail}</p><p><strong>Amount:</strong> ${d.amount} TK</p><p><strong>Method:</strong> ${d.paymentMethod}</p><p><strong>TrxID:</strong> ${d.transactionId}</p><p><strong>Status:</strong> ${d.status}</p><div class="item-actions"><button onclick="approveDeposit('${doc.id}','${d.userId}',${d.amount})">Approve</button><button onclick="rejectRequest('${doc.id}', 'deposits')" style="background:var(--danger-color)">Reject</button></div></div>`;
-                }).join('');
-            } catch (error) {
-                console.error("Error loading deposits:", error);
-                list.innerHTML = '<p>Error loading deposit requests. You may need to create a Firestore index. Check console for a link.</p>';
+            function renderPageContent(pageId, data) {
+                const user = auth.currentUser;
+                const requiresAuth = ['orders-page', 'profile-page', 'deposit-page', 'notifications-page'].includes(pageId);
+                if (requiresAuth && !user) {
+                    renderAuthPrompt(pageId); return;
+                }
+                switch (pageId) {
+                    case 'products-page': loadProducts(); break;
+                    case 'plan-selection-page': if (data) renderPlanSelectionPage(data); break;
+                    case 'deposit-page': break;
+                    case 'orders-page': fetchMyOrders(); break;
+                    case 'profile-page': showUserProfile(); break;
+                    case 'notifications-page': loadUserNotifications(); break;
+                }
             }
-        }
 
-        window.approveDeposit = async (depositId, userId, amount) => {
-            if (!confirm(`Approve ${amount} TK for this user?`)) return;
-            const userRef = db.collection('users').doc(userId);
-            const depositRef = db.collection('deposits').doc(depositId);
-            try {
-                await db.runTransaction(async t => {
-                    const userDoc = await t.get(userRef);
-                    if (!userDoc.exists) throw "User not found! Please create their document in the 'users' collection first.";
-                    t.update(depositRef, { status: 'approved' });
-                    t.update(userRef, { balance: firebase.firestore.FieldValue.increment(amount) });
-                });
-                alert('Deposit approved and balance updated!');
-                loadDepositsForAdmin();
-            } catch (e) { alert('Error: ' + e); }
-        };
-
-        window.rejectRequest = async (docId, collection) => {
-            if (!confirm(`Are you sure you want to reject this request?`)) return;
-            const docRef = db.collection(collection).doc(docId);
-            try {
-                const doc = await docRef.get();
-                if (!doc.exists) throw "Document not found!";
-                const data = doc.data();
-                if (collection === 'orders' && data.paidWith === 'balance') {
-                    const userRef = db.collection('users').doc(data.userId);
-                    await db.runTransaction(async t => {
-                        const userDoc = await t.get(userRef);
-                        if (!userDoc.exists) throw "User for refund not found!";
-                        t.update(userRef, { balance: firebase.firestore.FieldValue.increment(data.amount) });
-                        t.update(docRef, { status: 'Rejected' });
+            auth.onAuthStateChanged(user => {
+                const container = document.getElementById('auth-container');
+                if (user) {
+                    container.innerHTML = `
+                        <a href="#notifications-page" class="header-icon notification-bell">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                            <span class="notification-badge" id="notification-badge"></span>
+                        </a>
+                        <a href="#profile-page" class="header-icon profile-icon">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </a>`;
+                    
+                    listenForNotifications(user);
+                    
+                    container.querySelector('.notification-bell').addEventListener('click', (e) => {
+                         e.preventDefault();
+                         document.getElementById('notification-badge').style.display = 'none';
+                         showPage('notifications-page');
                     });
-                    alert('Order rejected and balance has been refunded to the user.');
+
                 } else {
-                    await docRef.update({ status: 'Rejected' });
-                    alert('Request rejected.');
+                    container.innerHTML = `<button id="login-signup-btn">Login / Sign Up</button>`;
+                    document.getElementById('login-signup-btn')?.addEventListener('click', () => authModal.style.display = 'block');
                 }
-                if (collection === 'deposits') loadDepositsForAdmin();
-                if (collection === 'orders') loadOrdersForAdmin();
-            } catch (error) {
-                console.error("Error rejecting request: ", error);
-                alert("An error occurred: " + error.message);
+                const pageId = window.location.hash.substring(1) || 'products-page';
+                if (!pageId.startsWith('plan-selection')) renderPageContent(pageId, null);
+            });
+
+            function listenForNotifications(user) {
+                db.collection('notifications').where('recipient', 'in', ['all', user.uid]).orderBy('createdAt', 'desc').limit(1).onSnapshot(snapshot => {
+                    const badge = document.getElementById('notification-badge');
+                    if (badge && !snapshot.empty) {
+                        badge.style.display = 'block';
+                    }
+                });
             }
-        };
-        
-        async function loadUsersForAdmin(searchEmail = '') {
-            const list = document.getElementById('admin-user-list');
-            list.innerHTML = loadingSpinner;
-            let query = db.collection('users');
-            if (searchEmail) {
-                query = query.where('email', '==', searchEmail);
-            } else {
-                query = query.orderBy('createdAt', 'desc');
+
+            async function loadUserNotifications() {
+                const container = document.getElementById('notifications-container');
+                container.innerHTML = loadingSpinner;
+                const user = auth.currentUser;
+                if (!user) { renderAuthPrompt('notifications-page'); return; }
+
+                const snap = await db.collection('notifications').where('recipient', 'in', ['all', user.uid]).orderBy('createdAt', 'desc').get();
+                if (snap.empty) { container.innerHTML = '<p>No notifications found.</p>'; return; }
+                
+                container.innerHTML = snap.docs.map(doc => {
+                    const n = doc.data();
+                    const date = new Date(n.createdAt.toDate()).toLocaleString('bn-BD');
+                    return `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><p style="font-size: 0.8em; color: #888; text-align: right;">${date}</p></div>`;
+                }).join('');
             }
-            const snap = await query.get();
-            list.innerHTML = snap.docs.map(doc => {
-                const u = doc.data();
-                return `<div class="list-item"><p><strong>Email:</strong> ${u.email}</p><p><strong>Balance:</strong> ${u.balance || 0} TK</p><div class="item-actions"><button onclick="editBalance('${doc.id}', ${u.balance || 0})">Edit Balance</button></div></div>`;
-            }).join('') || '<p>No users found.</p>';
-        }
-
-        window.editBalance = async (userId, currentBalance) => {
-            const newBalance = prompt("Enter new balance:", currentBalance);
-            if (newBalance !== null && !isNaN(newBalance)) {
-                await db.collection('users').doc(userId).update({ balance: parseFloat(newBalance) });
-                alert('Balance updated!');
-                loadUsersForAdmin(document.getElementById('user-search-email').value.trim());
+            
+            function showManualPaymentModal(paymentInfo) {
+                currentPayment = paymentInfo;
+                const { amount, type, details } = paymentInfo;
+                const modalContent = document.getElementById('payment-modal-content');
+                let headerHTML = `<h3 style="text-align:center;">পেমেন্ট করুন: ${amount} টাকা</h3>`;
+                if (type === 'order' && details) { headerHTML = `<div class="payment-product-info"><img src="${details.imageUrl}" alt="${details.productName}"><h4>${details.productName} (${details.packageName})</h4><p>${amount} TK</p></div>`; }
+                modalContent.innerHTML = `${headerHTML}<p style="text-align:center; color: #555;">একটি পেমেন্ট মাধ্যম বেছে নিন</p>
+                    <div class="payment-method-selector">
+                        <button class="payment-method-btn" data-method="bKash">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAsAOP2cgQ1Rjez63nVolBzH_6DHSa6Yjvp7v5H4AYKGnOgeDsiVZSj58QMwQJVpCeOcORLKsJTekWwMZSA4oWaAcOVHgLEh3_MrvJLONOVx6S58xmVeaTPR59rQ5BYoXfRMs7m2L0Hzsvz_GPceeVP2hPsu2R-Og1sCBjTawuFdeZaJ8WVtmG0AlWtMrK/s1600/38242.png" alt="bKash">
+                        </button>
+                        <button class="payment-method-btn" data-method="Nagad">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjszctpORk3UecPrJ9xfVZMe3RXyR3KyPIJ6dtqFHQGEyX1K_JMuzVjv2AI9lhNMVoyPj_EcdftuV209dlGRsIcLAr2NK6mSKdEqAsKgA5bz9Ft7N31iljsfKoddwbUL5k_xc0UQY8fe0DZ3D3jNh9J14M86aWcUWnMhVHmzz-e7DGA1DCpHZVdjQHrU24z/s1600/38243.png" alt="Nagad">
+                        </button>
+                    </div>
+                    <div id="payment-instructions-container" style="display:none;"></div>`;
+                paymentModal.style.display = 'block';
             }
-        };
 
-        const productFormContainerHTML = `<div id="product-form" class="form-container"><h3 id="product-form-title"></h3><input type="hidden" id="edit-product-id"><input type="text" id="product-name" placeholder="Product Name"><input type="url" id="image-url" placeholder="Image URL"><h4>Plans</h4><div id="plans-editor"></div><button id="add-plan-btn" type="button" style="background-color:var(--secondary-color);">+ Add Plan</button><button id="save-product-btn">Save Product</button><button id="cancel-product-btn" type="button" style="background:#9e9e9e;">Cancel</button></div>`;
-        document.getElementById('product-form-container').innerHTML = productFormContainerHTML;
-        
-        async function loadProductsForAdmin() {
-            const list = document.getElementById('admin-product-list');
-            list.innerHTML = loadingSpinner;
-            document.getElementById('show-add-product-btn').style.display = 'block';
-            document.getElementById('product-form').style.display = 'none';
-            const snap = await db.collection('products').orderBy('name').get();
-            list.innerHTML = snap.docs.map(doc => `<div class="list-item"><p><strong>${doc.data().name}</strong></p><div class="item-actions"><button onclick="editProduct('${doc.id}')">Edit</button><button onclick="deleteProduct('${doc.id}')" style="background:var(--danger-color)">Delete</button></div></div>`).join('') || '<p>No products found.</p>';
-        }
-
-        window.editProduct = async (id) => { const doc = await db.collection('products').doc(id).get(); if (doc.exists) showProductForm(true, id, doc.data()); };
-        window.deleteProduct = async (id) => { if (confirm('Are you sure you want to delete this product?')) { await db.collection('products').doc(id).delete(); loadProductsForAdmin(); } };
-        
-        function showProductForm(isEdit, id, data = {}) {
-            document.getElementById('product-form-title').innerText = isEdit ? `Edit: ${data.name}` : 'Add New Product';
-            document.getElementById('edit-product-id').value = id || '';
-            document.getElementById('product-name').value = data.name || '';
-            document.getElementById('image-url').value = data.imageUrl || '';
-            const editor = document.getElementById('plans-editor');
-            editor.innerHTML = '';
-            if (data.plans) data.plans.forEach(p => addPlanEntry(p));
-            document.getElementById('product-form').style.display = 'block';
-            document.getElementById('show-add-product-btn').style.display = 'none';
-            document.getElementById('admin-product-list').style.display = 'block'; // Corrected from 'none'
-        }
-
-        function addPlanEntry(plan = {}) {
-            const editor = document.getElementById('plans-editor');
-            const entry = document.createElement('div');
-            entry.className = 'plan-entry';
-            entry.innerHTML = `<input value="${plan.name || ''}" placeholder="Plan Name"><input type="number" value="${plan.price || ''}" placeholder="Price"><select><option value="true" ${plan.stock !== false ? 'selected' : ''}>In Stock</option><option value="false" ${plan.stock === false ? 'selected' : ''}>Out of Stock</option></select><button type="button" onclick="this.parentElement.remove()" style="background:var(--danger-color)">Remove</button>`;
-            editor.appendChild(entry);
-        }
-        
-        document.getElementById('show-add-product-btn').addEventListener('click', () => showProductForm(false));
-        document.getElementById('add-plan-btn').addEventListener('click', () => addPlanEntry());
-        document.getElementById('cancel-product-btn').addEventListener('click', () => loadProductsForAdmin());
-        document.getElementById('save-product-btn').addEventListener('click', async () => {
-            const id = document.getElementById('edit-product-id').value;
-            const plans = [...document.querySelectorAll('#plans-editor .plan-entry')].map(e => ({ name: e.children[0].value, price: parseFloat(e.children[1].value) || 0, stock: e.children[2].value === 'true' }));
-            const data = { name: document.getElementById('product-name').value, imageUrl: document.getElementById('image-url').value, plans };
-            if (!data.name) return alert('Product name is required.');
-            if (id) { await db.collection('products').doc(id).update(data); } else { await db.collection('products').add(data); }
-            loadProductsForAdmin();
-        });
-
-        async function loadOrdersForAdmin() {
-            const list = document.getElementById('admin-order-list');
-            list.innerHTML = loadingSpinner;
-            const snap = await db.collection('orders').orderBy('createdAt', 'desc').get();
-            if (snap.empty) { list.innerHTML = '<p>No orders found.</p>'; return; }
-            list.innerHTML = snap.docs.map(doc => {
-                const o = doc.data();
-                let status = o.status.replace(/_/g, ' ');
-                status = status.charAt(0).toUpperCase() + status.slice(1);
-                const verificationDetails = status === 'Verification pending' ? `<p><strong>Method:</strong> ${o.paymentMethod}</p><p><strong>TrxID:</strong> ${o.transactionId}</p>` : '';
-                return `<div class="list-item"><p><strong>Product:</strong> ${o.productName} (${o.packageName})</p><p><strong>Customer:</strong> ${o.userEmail}</p><p><strong>Paid With:</strong> ${o.paidWith || o.paymentMethod || 'N/A'}</p>${verificationDetails}<p><strong>Status:</strong> ${status}</p><div class="item-actions">${o.status !== 'Completed' && o.status !== 'Rejected' ? `<button onclick="updateOrderStatus('${doc.id}','Completed')">Complete</button>` : ''}${o.status !== 'Rejected' && o.status !== 'Completed' ? `<button onclick="updateOrderStatus('${doc.id}', 'Rejected')" style="background:var(--danger-color)">Reject</button>` : ''}</div></div>`;
-            }).join('');
-        }
-
-        window.updateOrderStatus = async (id, status) => {
-            if (status === 'Rejected') {
-                rejectRequest(id, 'orders');
-                return;
-            }
-            if (confirm(`Change status to "${status}"?`)) {
-                await db.collection('orders').doc(id).update({ status });
-                loadOrdersForAdmin();
-            }
-        };
-
-        const recipientSelect = document.getElementById('notification-recipient');
-        const userEmailInput = document.getElementById('notification-user-email');
-        const sendBtn = document.getElementById('send-notification-btn');
-        recipientSelect.addEventListener('change', () => { userEmailInput.style.display = recipientSelect.value === 'specific' ? 'block' : 'none'; });
-        sendBtn.addEventListener('click', async () => {
-            const recipientType = recipientSelect.value;
-            const title = document.getElementById('notification-title').value.trim();
-            const message = document.getElementById('notification-message').value.trim();
-            const userEmail = document.getElementById('notification-user-email').value.trim();
-            if (!title || !message) { return alert('Title and message are required.'); }
-            sendBtn.disabled = true; sendBtn.textContent = 'Sending...';
-            try {
-                let recipient = 'all';
-                if (recipientType === 'specific') {
-                    if (!userEmail) throw new Error('User email is required.');
-                    const userQuery = await db.collection('users').where('email', '==', userEmail).limit(1).get();
-                    if (userQuery.empty) throw new Error('User with this email not found.');
-                    recipient = userQuery.docs[0].id;
+            paymentModal.addEventListener('click', async e => {
+                const paymentMethodBtn = e.target.closest('.payment-method-btn');
+                if (paymentMethodBtn) {
+                    document.querySelectorAll('.payment-method-btn').forEach(btn => btn.classList.remove('selected'));
+                    paymentMethodBtn.classList.add('selected');
+                    currentPayment.method = paymentMethodBtn.dataset.method;
+                    const container = document.getElementById('payment-instructions-container');
+                    const paymentNumber = '01832791849';
+                    container.innerHTML = `<div id="payment-instructions" style="background-color:${currentPayment.method==='bKash'?'#fce4ec':'#fff3e0'};color:${currentPayment.method==='bKash'?'#c2185b':'#ef6c00'};"><ul><li>• আপনার ${currentPayment.method} অ্যাপে যান অথবা *${currentPayment.method==='bKash'?'247':'167'}# ডায়াল করুন।</li><li>• "Send Money" অপশনটি বেছে নিন।</li><li>• প্রাপক নম্বর: <strong style="font-size: 1.1em;">${paymentNumber}</strong> <button class="copy-btn" data-copy="${paymentNumber}">Copy</button></li><li>• টাকার পরিমাণ দিন: <strong>${currentPayment.amount}</strong></li><li>• পেমেন্ট সম্পন্ন হলে, নিচে ট্রানজেকশন আইডিটি দিন।</li></ul></div><div style="margin-top: 20px;"><input type="text" id="transaction-id-input" placeholder="ট্রানজেকশন আইডি দিন" style="width: calc(100% - 24px); padding: 12px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 1em;"><button id="verify-payment-btn" class="next-step-button" style="margin-top:10px;">Verify Payment</button></div>`;
+                    container.style.display = 'block';
                 }
-                await db.collection('notifications').add({ title, message, recipient, createdAt: new Date() });
-                alert('Notification sent successfully!');
-                document.getElementById('notification-title').value = '';
-                document.getElementById('notification-message').value = '';
-                document.getElementById('notification-user-email').value = '';
-            } catch (error) { alert('Error: ' + error.message); } 
-            finally { sendBtn.disabled = false; sendBtn.textContent = 'Send Notification'; }
+                if (e.target.classList.contains('copy-btn')) { navigator.clipboard.writeText(e.target.dataset.copy).then(() => alert('নম্বর কপি করা হয়েছে!')); }
+                if (e.target.id === 'verify-payment-btn') {
+                    const transactionId = document.getElementById('transaction-id-input').value.trim();
+                    if (!transactionId) { alert('অনুগ্রহ করে ট্রানজেকশন আইডি দিন।'); return; }
+                    e.target.disabled = true; e.target.textContent = 'Verifying...';
+                    const commonData = { userId: auth.currentUser.uid, userEmail: auth.currentUser.email, amount: currentPayment.amount, paymentMethod: currentPayment.method, transactionId, paymentTo: '01832791849', status: 'verification_pending', createdAt: new Date() };
+                    try {
+                        if (currentPayment.type === 'deposit') { await db.collection('deposits').add(commonData); alert('আপনার ব্যালেন্স যোগ করার অনুরোধটি গ্রহণ করা হয়েছে।'); }
+                        else if (currentPayment.type === 'order') { await db.collection('orders').add({ ...commonData, ...currentPayment.details }); alert('আপনার অর্ডারটি গ্রহণ করা হয়েছে। ভেরিফাই করার পর সম্পন্ন করা হবে।'); }
+                        paymentModal.style.display = 'none';
+                        showPage('orders-page');
+                    } catch (err) { alert('একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।'); } finally { e.target.disabled = false; e.target.textContent = 'Verify Payment'; }
+                }
+                if (e.target.id === 'payment-modal-close') { paymentModal.style.display = 'none'; }
+            });
+
+            async function loadProducts() {
+                const list = document.getElementById('product-list');
+                list.innerHTML = loadingSpinner;
+                const snap = await db.collection('products').orderBy('name').get();
+                list.innerHTML = snap.docs.map(doc => {
+                    const p = doc.data();
+                    return `<div class="product-card" data-name="${p.name}" data-plans='${JSON.stringify(p.plans || [])}' data-image="${p.imageUrl || ''}"><img src="${p.imageUrl || ''}" alt="${p.name}"><h3>${p.name}</h3></div>`;
+                }).join('');
+            }
+
+            async function renderPlanSelectionPage(data) {
+                const { productName, plans, imageUrl } = data;
+                const page = document.getElementById('plan-selection-page');
+                const user = auth.currentUser;
+                let userBalance = 0;
+                if (user) {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) userBalance = userDoc.data().balance || 0;
+                }
+                page.innerHTML = `
+                    <div class="product-header"><img src="${imageUrl}"><div><h3>${productName}</h3></div></div>
+                    ${user ? `<div class="balance-display"><h4>Your Balance</h4><p>${userBalance.toFixed(2)} TK</p></div>` : ''}
+                    <div class="plan-grid">${plans.map((plan, i) => plan.stock ? `<div class="plan-item-radio"><input type="radio" id="plan-${i}" name="plan" value='${JSON.stringify(plan)}'><label class="plan-label-radio" for="plan-${i}">${plan.name}<span class="plan-price">${plan.price} TK</span></label></div>` : '').join('')}</div>
+                    <div id="purchase-options">
+                        ${user ? `<button id="pay-with-balance-btn" class="next-step-button">Pay with Balance</button>` : ''}
+                        <button id="pay-manually-btn" class="next-step-button" style="background-color: var(--primary-color);">Pay with bKash / Nagad</button>
+                    </div>
+                    <button class="back-button">&laquo; Back</button>`;
+                page.querySelector('#pay-manually-btn').addEventListener('click', () => {
+                    const selected = page.querySelector('input[name="plan"]:checked');
+                    if (!selected) return alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।');
+                    const plan = JSON.parse(selected.value);
+                    showManualPaymentModal({ amount: plan.price, type: 'order', details: { productName, packageName: plan.name, imageUrl } });
+                });
+                page.querySelector('.back-button').addEventListener('click', () => showPage('products-page'));
+                
+                const payWithBalanceBtn = page.querySelector('#pay-with-balance-btn');
+                if (payWithBalanceBtn) {
+                    payWithBalanceBtn.addEventListener('click', async () => {
+                        const selected = page.querySelector('input[name="plan"]:checked');
+                        if (!selected) return alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।');
+                        const plan = JSON.parse(selected.value);
+                        const price = parseFloat(plan.price);
+                        if (userBalance < price) return alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।');
+                        if (confirm(`আপনি কি আপনার ব্যালেন্স থেকে ${price} টাকা দিয়ে এই অর্ডারটি করতে চান? টাকা কেটে নেওয়া হবে কিন্তু অর্ডারটি অ্যাডমিন রিভিউ করার জন্য পেন্ডিং থাকবে।`)) {
+                            const userRef = db.collection('users').doc(user.uid);
+                            try {
+                                await db.runTransaction(async t => {
+                                    const userDoc = await t.get(userRef);
+                                    if (!userDoc.exists) throw "User not found!";
+                                    const newBalance = userDoc.data().balance - price;
+                                    if (newBalance < 0) throw "Insufficient balance.";
+                                    t.update(userRef, { balance: newBalance });
+                                    const orderRef = db.collection('orders').doc();
+                                    t.set(orderRef, { productName, packageName: plan.name, userId: user.uid, userEmail: user.email, status: "Pending", createdAt: new Date(), paidWith: "balance", amount: price });
+                                });
+                                alert('আপনার অর্ডারটি সফলভাবে জমা হয়েছে এবং পর্যালোচনার জন্য পেন্ডিং আছে।');
+                                showPage('orders-page');
+                            } catch (error) { console.error("Balance transaction failed: ", error); alert("একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।"); }
+                        }
+                    });
+                }
+            }
+            
+            document.getElementById('deposit-proceed-btn')?.addEventListener('click', () => {
+                const amountInput = document.getElementById('custom-deposit-amount');
+                const amount = parseFloat(amountInput.value);
+                if (isNaN(amount) || amount < 50 || amount > 25000) { alert('দয়া করে ৫০ থেকে ২৫,০০০ এর মধ্যে একটি সঠিক পরিমাণ লিখুন।'); return; }
+                showManualPaymentModal({ amount, type: 'deposit' });
+            });
+
+            function renderAuthPrompt(pageId) {
+                const container = document.getElementById(pageId);
+                container.innerHTML = `<div class="auth-prompt"><h3>Please login to view this page.</h3><button class="prompt-login-btn">Login / Sign Up</button></div>`;
+                container.querySelector('.prompt-login-btn').addEventListener('click', () => document.getElementById('auth-modal').style.display = 'block');
+            }
+
+            async function fetchMyOrders() {
+                const container = document.getElementById('orders-container');
+                container.innerHTML = loadingSpinner;
+                const user = auth.currentUser;
+                if (!user) { renderAuthPrompt('orders-page'); return; }
+                const snap = await db.collection('orders').where('userId', '==', user.uid).orderBy('createdAt', 'desc').get();
+                if (snap.empty) { container.innerHTML = '<p>No orders yet.</p>'; return; }
+                container.innerHTML = snap.docs.map(doc => {
+                    const o = doc.data();
+                    const date = new Date(o.createdAt.toDate()).toLocaleString('bn-BD');
+                    let status = o.status.replace(/_/g, ' ');
+                    status = status.charAt(0).toUpperCase() + status.slice(1);
+                    const colorMap = { 'Completed': 'var(--success-color)', 'Verification pending': 'var(--pending-color)', 'Pending': 'var(--pending-color)', 'Rejected': 'var(--danger-color)'};
+                    const color = colorMap[status] || 'var(--pending-color)';
+                    return `<div class="order-item" style="border-left-color: ${color};"><h4>${o.productName} (${o.packageName})</h4><p><strong>Amount:</strong> ${o.amount||'N/A'} TK</p><p><strong>Method:</strong> ${o.paymentMethod || o.paidWith || 'N/A'}</p><p><strong>Date:</strong> ${date}</p><p><strong>Status:</strong> <span class="status-badge" style="background-color:${color};">${status}</span></p>${o.transactionId ? `<p style="font-size:0.8em; word-break:break-all;"><strong>TrxID:</strong> ${o.transactionId}</p>` : ''}</div>`;
+                }).join('');
+            }
+
+            async function showUserProfile() {
+                const container = document.getElementById('profile-container');
+                container.innerHTML = loadingSpinner;
+                const user = auth.currentUser;
+                if (!user) { renderAuthPrompt('profile-page'); return; }
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const balance = userDoc.exists ? (userDoc.data().balance || 0) : 0;
+                const snap = await db.collection('orders').where('userId', '==', user.uid).get();
+                container.innerHTML = `<div class="profile-card"><h3><span>${user.displayName || 'User'}</span></h3><div class="balance-display"><h4>Current Balance</h4><p>${balance.toFixed(2)} TK</p></div><p><strong>Email:</strong> ${user.email}</p><p><strong>Total Orders:</strong> ${snap.size}</p><button id="logout-button">Logout</button></div>`;
+                container.querySelector('#logout-button').addEventListener('click', () => auth.signOut());
+            }
+            
+            document.querySelector('main').addEventListener('click', e => {
+                const card = e.target.closest('.product-card');
+                if (card) {
+                    showPage('plan-selection-page', { productName: card.dataset.name, plans: JSON.parse(card.dataset.plans), imageUrl: card.dataset.image });
+                }
+            });
+
+            navItems.forEach(item => item.addEventListener('click', e => { e.preventDefault(); showPage(item.getAttribute('href').substring(1)); }));
+            const modalContent = document.getElementById('auth-modal-content');
+            modalContent.querySelector('.close-button').onclick = () => document.getElementById('auth-modal').style.display = 'none';
+            modalContent.addEventListener('click', e => {
+                if(e.target.classList.contains('form-switch-link')) {
+                    modalContent.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
+                    document.getElementById(e.target.dataset.form).classList.add('active');
+                }
+            });
+            document.getElementById('login-form')?.addEventListener('submit', e => { e.preventDefault(); const email=e.target.elements['login-email'].value, pass=e.target.elements['login-password'].value; auth.signInWithEmailAndPassword(email, pass).then(()=>document.getElementById('auth-modal').style.display='none').catch(err=>alert(err.message)); });
+            document.getElementById('signup-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = e.target.elements['signup-name'].value, email = e.target.elements['signup-email'].value, pass = e.target.elements['signup-password'].value;
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+                    const user = userCredential.user;
+                    await user.updateProfile({ displayName: name });
+                    await db.collection('users').doc(user.uid).set({ email, displayName: name, balance: 0, createdAt: new Date() });
+                    document.getElementById('auth-modal').style.display = 'none';
+                } catch (err) { alert(err.message); }
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
