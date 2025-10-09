@@ -39,6 +39,8 @@
         form label { display: block; margin-bottom: 10px; font-weight: bold; text-align: left; }
         form input { width: calc(100% - 24px); padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
         form button { width: 100%; background-color: var(--success-color); color: white; padding: 14px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .forgot-password-link { text-align: right; font-size: 0.9em; margin-top: -10px; margin-bottom: 15px; }
+        .forgot-password-link a { color: var(--secondary-color); text-decoration: none; }
         #orders-container .order-item, #notifications-container .notification-item { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .order-item { border-left: 6px solid; }
         .order-item h4, .notification-item h4 { margin: 0 0 5px 0; }
@@ -93,6 +95,10 @@
         .payment-product-info img { max-width: 80px; border-radius: 8px; margin-bottom: 10px; }
         .payment-product-info h4 { margin: 0; font-size: 1.2em; }
         .payment-product-info p { margin: 5px 0 0; font-size: 1.1em; color: var(--danger-color); font-weight: bold; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .input-group input { width: calc(100% - 24px); padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; }
+        .payment-notice { background-color: #fff9c4; border: 1px solid #fbc02d; color: #795548; padding: 15px; border-radius: 8px; font-size: 0.9em; text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -129,8 +135,26 @@
     <div id="auth-modal" class="modal">
         <div class="modal-content" id="auth-modal-content">
             <span class="close-button">&times;</span>
-            <div id="login-form-container" class="form-container active"><h2>লগইন</h2><form id="login-form"><label>ইমেইল:</label><input type="email" id="login-email" required><label>পাসওয়ার্ড:</label><input type="password" id="login-password" required><button type="submit">লগইন</button></form><p class="form-switch-link" data-form="signup-form-container">অ্যাকাউন্ট নেই? সাইন আপ করুন।</p></div>
-            <div id="signup-form-container" class="form-container"><h2>নতুন অ্যাকাউন্ট</h2><form id="signup-form"><label>নাম:</label><input type="text" id="signup-name" required><label>ইমেইল:</label><input type="email" id="signup-email" required><label>পাসওয়ার্ড:</label><input type="password" id="signup-password" required><button type="submit">সাইন আপ</button></form><p class="form-switch-link" data-form="login-form-container">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন।</p></div>
+            <div id="login-form-container" class="form-container active">
+                <h2>লগইন</h2>
+                <form id="login-form">
+                    <label>ইমেইল:</label><input type="email" id="login-email" required>
+                    <label>পাসওয়ার্ড:</label><input type="password" id="login-password" required>
+                    <div class="forgot-password-link"><a href="#" id="forgot-password-btn">Forgot Password?</a></div>
+                    <button type="submit">লগইন</button>
+                </form>
+                <p class="form-switch-link" data-form="signup-form-container">অ্যাকাউন্ট নেই? সাইন আপ করুন।</p>
+            </div>
+            <div id="signup-form-container" class="form-container">
+                <h2>নতুন অ্যাকাউন্ট</h2>
+                <form id="signup-form">
+                    <label>নাম:</label><input type="text" id="signup-name" required>
+                    <label>ইমেইল:</label><input type="email" id="signup-email" required>
+                    <label>পাসওয়ার্ড:</label><input type="password" id="signup-password" required>
+                    <button type="submit">সাইন আপ</button>
+                </form>
+                <p class="form-switch-link" data-form="login-form-container">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন।</p>
+            </div>
         </div>
     </div>
     <div id="manual-payment-modal" class="modal">
@@ -232,14 +256,24 @@
                 const user = auth.currentUser;
                 if (!user) { renderAuthPrompt('notifications-page'); return; }
 
-                const snap = await db.collection('notifications').where('recipient', 'in', ['all', user.uid]).orderBy('createdAt', 'desc').get();
-                if (snap.empty) { container.innerHTML = '<p>No notifications found.</p>'; return; }
-                
-                container.innerHTML = snap.docs.map(doc => {
-                    const n = doc.data();
-                    const date = new Date(n.createdAt.toDate()).toLocaleString('bn-BD');
-                    return `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><p style="font-size: 0.8em; color: #888; text-align: right;">${date}</p></div>`;
-                }).join('');
+                const userCreationTime = new Date(user.metadata.creationTime);
+                try {
+                    const allUsersQuery = db.collection('notifications').where('recipient', '==', 'all').where('createdAt', '>', userCreationTime).orderBy('createdAt', 'desc');
+                    const specificUserQuery = db.collection('notifications').where('recipient', '==', user.uid).orderBy('createdAt', 'desc');
+                    const [allUsersSnap, specificUserSnap] = await Promise.all([ allUsersQuery.get(), specificUserQuery.get() ]);
+                    const notifications = [];
+                    allUsersSnap.forEach(doc => notifications.push(doc.data()));
+                    specificUserSnap.forEach(doc => notifications.push(doc.data()));
+                    notifications.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+                    if (notifications.length === 0) { container.innerHTML = '<p>No new notifications.</p>'; return; }
+                    container.innerHTML = notifications.map(n => {
+                        const date = new Date(n.createdAt.toDate()).toLocaleString('bn-BD');
+                        return `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><p style="font-size: 0.8em; color: #888; text-align: right;">${date}</p></div>`;
+                    }).join('');
+                } catch (error) {
+                    console.error("Error loading notifications:", error);
+                    container.innerHTML = '<p>Could not load notifications. You might need to create Firestore indexes. Please check the console for a link.</p>';
+                }
             }
             
             function showManualPaymentModal(paymentInfo) {
@@ -250,14 +284,9 @@
                 if (type === 'order' && details) { headerHTML = `<div class="payment-product-info"><img src="${details.imageUrl}" alt="${details.productName}"><h4>${details.productName} (${details.packageName})</h4><p>${amount} TK</p></div>`; }
                 modalContent.innerHTML = `${headerHTML}<p style="text-align:center; color: #555;">একটি পেমেন্ট মাধ্যম বেছে নিন</p>
                     <div class="payment-method-selector">
-                        <button class="payment-method-btn" data-method="bKash">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAsAOP2cgQ1Rjez63nVolBzH_6DHSa6Yjvp7v5H4AYKGnOgeDsiVZSj58QMwQJVpCeOcORLKsJTekWwMZSA4oWaAcOVHgLEh3_MrvJLONOVx6S58xmVeaTPR59rQ5BYoXfRMs7m2L0Hzsvz_GPceeVP2hPsu2R-Og1sCBjTawuFdeZaJ8WVtmG0AlWtMrK/s1600/38242.png" alt="bKash">
-                        </button>
-                        <button class="payment-method-btn" data-method="Nagad">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjszctpORk3UecPrJ9xfVZMe3RXyR3KyPIJ6dtqFHQGEyX1K_JMuzVjv2AI9lhNMVoyPj_EcdftuV209dlGRsIcLAr2NK6mSKdEqAsKgA5bz9Ft7N31iljsfKoddwbUL5k_xc0UQY8fe0DZ3D3jNh9J14M86aWcUWnMhVHmzz-e7DGA1DCpHZVdjQHrU24z/s1600/38243.png" alt="Nagad">
-                        </button>
-                    </div>
-                    <div id="payment-instructions-container" style="display:none;"></div>`;
+                        <button class="payment-method-btn" data-method="bKash"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAsAOP2cgQ1Rjez63nVolBzH_6DHSa6Yjvp7v5H4AYKGnOgeDsiVZSj58QMwQJVpCeOcORLKsJTekWwMZSA4oWaAcOVHgLEh3_MrvJLONOVx6S58xmVeaTPR59rQ5BYoXfRMs7m2L0Hzsvz_GPceeVP2hPsu2R-Og1sCBjTawuFdeZaJ8WVtmG0AlWtMrK/s1600/38242.png" alt="bKash"></button>
+                        <button class="payment-method-btn" data-method="Nagad"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjszctpORk3UecPrJ9xfVZMe3RXyR3KyPIJ6dtqFHQGEyX1K_JMuzVjv2AI9lhNMVoyPj_EcdftuV209dlGRsIcLAr2NK6mSKdEqAsKgA5bz9Ft7N31iljsfKoddwbUL5k_xc0UQY8fe0DZ3D3jNh9J14M86aWcUWnMhVHmzz-e7DGA1DCpHZVdjQHrU24z/s1600/38243.png" alt="Nagad"></button>
+                    </div><div id="payment-instructions-container" style="display:none;"></div>`;
                 paymentModal.style.display = 'block';
             }
 
@@ -311,26 +340,36 @@
                     <div class="product-header"><img src="${imageUrl}"><div><h3>${productName}</h3></div></div>
                     ${user ? `<div class="balance-display"><h4>Your Balance</h4><p>${userBalance.toFixed(2)} TK</p></div>` : ''}
                     <div class="plan-grid">${plans.map((plan, i) => plan.stock ? `<div class="plan-item-radio"><input type="radio" id="plan-${i}" name="plan" value='${JSON.stringify(plan)}'><label class="plan-label-radio" for="plan-${i}">${plan.name}<span class="plan-price">${plan.price} TK</span></label></div>` : '').join('')}</div>
+                    <div class="input-group"><label for="delivery-email">আপনার ইমেইল এড্রেসটি দিন:</label><input type="email" id="delivery-email" placeholder="যে ইমেইলে সার্ভিসটি চান" value="${user ? user.email : ''}"></div>
                     <div id="purchase-options">
                         ${user ? `<button id="pay-with-balance-btn" class="next-step-button">Pay with Balance</button>` : ''}
                         <button id="pay-manually-btn" class="next-step-button" style="background-color: var(--primary-color);">Pay with bKash / Nagad</button>
                     </div>
+                    <div class="payment-notice"><strong>গুরুত্বপূর্ণ:</strong> দয়া করে সঠিক ইমেইল এড্রেস দিন। আপনার অর্ডারের সকল তথ্য এই ইমেইলে পাঠানো হবে। ভুল তথ্যের জন্য অর্ডারটি বাতিল হতে পারে।</div>
                     <button class="back-button">&laquo; Back</button>`;
-                page.querySelector('#pay-manually-btn').addEventListener('click', () => {
+                
+                function getOrderDetails() {
                     const selected = page.querySelector('input[name="plan"]:checked');
-                    if (!selected) return alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।');
+                    if (!selected) { alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।'); return null; }
+                    const deliveryEmail = document.getElementById('delivery-email').value.trim();
+                    if (!deliveryEmail || !/^\S+@\S+\.\S+$/.test(deliveryEmail)) { alert('অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।'); return null; }
                     const plan = JSON.parse(selected.value);
-                    showManualPaymentModal({ amount: plan.price, type: 'order', details: { productName, packageName: plan.name, imageUrl } });
+                    return { plan, deliveryEmail };
+                }
+
+                page.querySelector('#pay-manually-btn').addEventListener('click', () => {
+                    const details = getOrderDetails();
+                    if (!details) return;
+                    showManualPaymentModal({ amount: details.plan.price, type: 'order', details: { productName, packageName: details.plan.name, imageUrl, deliveryEmail: details.deliveryEmail } });
                 });
                 page.querySelector('.back-button').addEventListener('click', () => showPage('products-page'));
                 
                 const payWithBalanceBtn = page.querySelector('#pay-with-balance-btn');
                 if (payWithBalanceBtn) {
                     payWithBalanceBtn.addEventListener('click', async () => {
-                        const selected = page.querySelector('input[name="plan"]:checked');
-                        if (!selected) return alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।');
-                        const plan = JSON.parse(selected.value);
-                        const price = parseFloat(plan.price);
+                        const details = getOrderDetails();
+                        if (!details) return;
+                        const price = parseFloat(details.plan.price);
                         if (userBalance < price) return alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।');
                         if (confirm(`আপনি কি আপনার ব্যালেন্স থেকে ${price} টাকা দিয়ে এই অর্ডারটি করতে চান? টাকা কেটে নেওয়া হবে কিন্তু অর্ডারটি অ্যাডমিন রিভিউ করার জন্য পেন্ডিং থাকবে।`)) {
                             const userRef = db.collection('users').doc(user.uid);
@@ -342,7 +381,7 @@
                                     if (newBalance < 0) throw "Insufficient balance.";
                                     t.update(userRef, { balance: newBalance });
                                     const orderRef = db.collection('orders').doc();
-                                    t.set(orderRef, { productName, packageName: plan.name, userId: user.uid, userEmail: user.email, status: "Pending", createdAt: new Date(), paidWith: "balance", amount: price });
+                                    t.set(orderRef, { productName, packageName: details.plan.name, userId: user.uid, userEmail: user.email, deliveryEmail: details.deliveryEmail, status: "Pending", createdAt: new Date(), paidWith: "balance", amount: price });
                                 });
                                 alert('আপনার অর্ডারটি সফলভাবে জমা হয়েছে এবং পর্যালোচনার জন্য পেন্ডিং আছে।');
                                 showPage('orders-page');
@@ -422,6 +461,12 @@
                     await db.collection('users').doc(user.uid).set({ email, displayName: name, balance: 0, createdAt: new Date() });
                     document.getElementById('auth-modal').style.display = 'none';
                 } catch (err) { alert(err.message); }
+            });
+            document.getElementById('forgot-password-btn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                if (!email) { alert('Please enter your email address in the email field first.'); return; }
+                auth.sendPasswordResetEmail(email).then(() => { alert('A password reset link has been sent to your email address.'); }).catch((error) => { alert('Error: ' + error.message); });
             });
         });
     </script>
