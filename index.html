@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Osman Shop Charer</title>
     <style>
-        :root { --primary-color: #4a148c; --secondary-color: #5e35b1; --success-color: #4CAF50; --pending-color: #ff9800; --danger-color: #f44336; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding-top: 90px; padding-bottom: 70px; }
-        header { background: linear-gradient(90deg, var(--primary-color), #880e4f); color: white; padding: 10px 20px; position: fixed; top: 0; width: calc(100% - 40px); z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        :root { --primary-color: #4a148c; --secondary-color: #5e35b1; --success-color: #4CAF50; --pending-color: #ff9800; --danger-color: #f44336; --verified-blue: #1DA1F2; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; padding-top: 90px; padding-bottom: 70px; }
+        header { background: linear-gradient(90deg, var(--primary-color), #880e4f); color: white; padding: 10px 20px; position: fixed; top: 0; width: calc(100% - 40px); z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .shop-title h2 { margin: 0; font-size: 1.2em; font-weight: bold; }
         #auth-container { display: flex; align-items: center; gap: 10px; }
@@ -15,20 +15,20 @@
         .header-icon svg { width: 24px; height: 24px; fill: white; }
         #auth-container button { background-color: white; color: var(--primary-color); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
         .notification-badge { position: absolute; top: -5px; right: -5px; background-color: var(--danger-color); color: white; border-radius: 50%; width: 10px; height: 10px; display: none; }
-        .notice-bar { background-color: #fffbe7; color: #856404; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9em; position: fixed; top: 52px; width: 100%; z-index: 999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; overflow: hidden; }
+        .notice-bar { background-color: #fffbe7; color: #856404; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9em; position: fixed; top: 52px; width: 100%; z-index: 98; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; overflow: hidden; }
         .notice-bar-content { margin: 0; display: inline-block; padding-left: 100%; animation: marquee 18s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
         main { padding: 20px; max-width: 1200px; margin: 0 auto; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to: { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .loader-container { display: flex; justify-content: center; align-items: center; padding: 50px; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .product-card { background-color: white; border: 1px solid #ddd; border-radius: 10px; text-align: center; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; }
         .product-card img { width: 100%; height: 120px; margin-bottom: 10px; border-radius: 8px; object-fit: cover; }
         .product-card h3 { margin: 0; color: #333; font-size: 1em; font-weight: 500; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; text-decoration: none; padding: 5px 0; }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 2px; }
         .nav-item span { font-size: 0.8em; }
@@ -83,9 +83,9 @@
         .step-number { background-color: var(--primary-color); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em; font-weight: bold; flex-shrink: 0; }
         .step-box h3 { margin: 0; color: var(--primary-color); font-size: 1.4em; }
         .step-box p { text-align: left; color: #555; line-height: 1.6; margin-bottom: 20px; }
-        .payment-method-selector { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .payment-method-btn { padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: white; flex: 1; text-align: center; display: flex; justify-content: center; align-items: center; height: 50px; }
-        .payment-method-btn img { max-height: 100%; max-width: 100px; }
+        .payment-method-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .payment-method-btn { padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: white; display: flex; justify-content: center; align-items: center; height: 50px; }
+        .payment-method-btn img { max-height: 100%; max-width: 100%; object-fit: contain; }
         .payment-method-btn.selected { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(74,20,140,0.5); }
         #payment-instructions { padding: 20px; border-radius: 10px; margin-top: 20px; }
         #payment-instructions ul { list-style: none; padding-left: 0; text-align: left; font-size: 0.9em; line-height: 1.6; }
@@ -99,6 +99,13 @@
         .input-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
         .input-group input { width: calc(100% - 24px); padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; }
         .payment-notice { background-color: #fff9c4; border: 1px solid #fbc02d; color: #795548; padding: 15px; border-radius: 8px; font-size: 0.9em; text-align: center; margin-top: 20px; }
+        .slider-container { width: 100%; max-width: 1200px; margin: 0 auto 20px auto; overflow: hidden; position: relative; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .slider-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; box-sizing: border-box; }
+        .slide img { width: 100%; display: block; }
+        .slider-dots { text-align: center; padding: 10px 0; }
+        .dot { cursor: pointer; height: 10px; width: 10px; margin: 0 5px; background-color: #bbb; border-radius: 50%; display: inline-block; transition: background-color 0.3s ease; }
+        .dot.active { background-color: var(--primary-color); width: 25px; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -110,28 +117,46 @@
     </header>
     <div class="notice-bar"><div class="notice-bar-content">যেকোনো প্রোডাক্ট অর্ডার করার ৩০ মিনিটের মধ্যে ডেলিভারি সম্পন্ন করা হয়।</div></div>
     <main>
-        <div id="products-page" class="page active"><h2 class="section-title" style="margin-top:0;">Available Products</h2><div id="product-list" class="product-grid"></div></div>
+        <div id="products-page" class="page active"></div>
         <div id="plan-selection-page" class="page"></div>
-        <div id="deposit-page" class="page">
-             <h2 class="section-title" style="margin-top:0;">Add Balance</h2>
-            <div class="step-box">
-                <div class="step-header"><span class="step-number">১</span><h3>টাকার পরিমাণ লিখুন</h3></div>
-                <p>আপনি কত টাকা যোগ করতে চান তা নিচের বক্সে লিখুন (সর্বনিম্ন ৫০ থেকে ২৫,০০০ পর্যন্ত)।</p>
-                <input type="number" id="custom-deposit-amount" placeholder="e.g., 500" min="50" max="25000" style="width: calc(100% - 30px); padding: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 1.2em; text-align: center; margin-top: 10px;">
-                <button id="deposit-proceed-btn" class="next-step-button" style="margin-top: 20px; background-color: var(--primary-color);">পেমেন্টের জন্য এগিয়ে যান</button>
-            </div>
-        </div>
-        <div id="orders-page" class="page"><h2 class="section-title" style="margin-top:0;">My Order History</h2><div id="orders-container"></div></div>
-        <div id="notifications-page" class="page"><h2 class="section-title" style="margin-top:0;">My Notifications</h2><div id="notifications-container"></div></div>
-        <div id="profile-page" class="page"><h2 class="section-title" style="margin-top:0;">My Profile</h2><div id="profile-container"></div></div>
+        <div id="deposit-page" class="page"></div>
+        <div id="orders-page" class="page"></div>
+        <div id="notifications-page" class="page"></div>
+        <div id="profile-page" class="page"></div>
     </main>
     <footer id="footer">
         <div class="footer-grid">
-            <div class="footer-col"><h3>STAY CONNECTED</h3><p>যেকোনো সমস্যায় পড়লে আমাদের WhatsApp-এ যোগাযোগ করুন।</p><div class="social-icons"><a href="https://www.facebook.com/md.osman222"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06 2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.32 11.93 5.96 14.22 5.96 15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 12 2.04Z"/></svg></a></div></div>
-            <div class="footer-col"><h3>SUPPORT CENTER</h3><a href="https://wa.me/8801832791849" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.6C8.75 21.39 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2Z"/></svg><div class="support-text"><p>WhatsApp</p></div></a><a href="https://t.me/OSMAN_GONI_50" class="support-button"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg><div class="support-text"><p>Telegram</p></div></a></div>
+            <div class="footer-col">
+                <h3>STAY CONNECTED</h3>
+                <p>যেকোনো সমস্যায় পড়লে আমাদের সাথে যোগাযোগ করুন।</p>
+                <div class="social-icons">
+                    <!-- UPDATED SOCIAL ICONS -->
+                    <a href="https://www.facebook.com/profile.php?id=61582145967642" target="_blank" title="Facebook">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06 2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.32 11.93 5.96 14.22 5.96 15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 12 2.04Z"/></svg>
+                    </a>
+                    <a href="https://t.me/OsmanShopCharer" target="_blank" title="Telegram">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg>
+                    </a>
+                    <a href="https://youtube.com/@osmanshopcharer?si=b6-Z0ApJ2DnRukEk" target="_blank" title="YouTube">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.08C21.91,9.87 21.95,10.96 21.95,12.11C21.95,13.26 21.91,14.35 21.84,15.14C21.78,15.95 21.69,16.58 21.56,17.05C21.31,18.26 20.25,19.32 19.05,19.56C17.83,19.81 13.04,20 12,20C10.96,20 6.17,19.81 4.95,19.56C3.75,19.32 2.69,18.26 2.44,17.05C2.31,16.58 2.22,15.95 2.16,15.14C2.09,14.35 2.05,13.26 2.05,12.11C2.05,10.96 2.09,9.87 2.16,9.08C2.22,8.27 2.31,7.64 2.44,7.17C2.69,5.96 3.75,4.9 4.95,4.66C6.17,4.41 10.96,4.19 12,4.19C13.04,4.19 17.83,4.41 19.05,4.66C20.25,4.9 21.31,5.96 21.56,7.17Z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>SUPPORT CENTER</h3>
+                <a href="https://wa.me/8801832791849" class="support-button">
+                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.6C8.75 21.39 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2Z"/></svg>
+                    <div class="support-text"><p>WhatsApp</p></div>
+                </a>
+                <a href="https://t.me/OSMAN_GONI_50" class="support-button">
+                     <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78,18.65L10.26,14.21L18.73,7.5C19.06,7.24 18.73,6.91 18.4,7.18L8.7,13.09L4.3,11.61C3.87,11.47 3.87,10.88 4.3,10.73L20.1,4.16C20.59,3.94 21.08,4.42 20.86,4.9L15.16,20.8C14.94,21.29 14.29,21.29 14.07,20.8L11.54,16.07L9.78,18.65Z"/></svg>
+                    <div class="support-text"><p>Telegram</p></div>
+                </a>
+            </div>
         </div>
         <p class="copyright-text">Copyright © 2025 | <a href="https://www.facebook.com/md.osman222" target="_blank">MD OSMAN GONI</a></p>
     </footer>
+
     <div id="auth-modal" class="modal">
         <div class="modal-content" id="auth-modal-content">
             <span class="close-button">&times;</span>
@@ -170,6 +195,7 @@
         <a href="#notifications-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,22A2,2 0 0,0 14,20H10A2,2 0 0,0 12,22M18,16.5V11C18,7.93 16.36,5.36 13.5,4.68V4A1.5,1.5 0 0,0 12,2.5A1.5,1.5 0 0,0 10.5,4V4.68C7.63,5.36 6,7.93 6,11V16.5L4,18V19H20V18L18,16.5Z"/></svg><span>Notifications</span></a>
         <a href="#profile-page" class="nav-item"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.33 14.67,14 12,14Z"/></svg><span>Profile</span></a>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
@@ -186,12 +212,23 @@
             const paymentModal = document.getElementById('manual-payment-modal');
             const loadingSpinner = `<div class="loader-container"><div class="loader"></div></div>`;
             let currentPayment = {};
+            let paymentMethodsList = [];
+            let slideIndex = 0;
+            let sliderInterval;
+
+            async function loadPaymentMethods() {
+                try {
+                    const doc = await db.collection('settings').doc('paymentMethods').get();
+                    if (doc.exists && doc.data().methods) {
+                        paymentMethodsList = doc.data().methods.filter(method => method.active);
+                    }
+                } catch (error) { console.error("Error fetching payment methods: ", error); }
+            }
 
             function showPage(pageId, data = null) {
                 pages.forEach(p => p.classList.remove('active'));
                 const targetPage = document.getElementById(pageId) || document.getElementById('products-page');
                 targetPage.classList.add('active');
-                pageId = targetPage.id;
                 navItems.forEach(item => item.classList.toggle('active', item.getAttribute('href') === `#${pageId}`));
                 if (!pageId.startsWith('plan-selection')) window.location.hash = pageId;
                 renderPageContent(pageId, data);
@@ -199,275 +236,127 @@
 
             function renderPageContent(pageId, data) {
                 const user = auth.currentUser;
-                const requiresAuth = ['orders-page', 'profile-page', 'deposit-page', 'notifications-page'].includes(pageId);
-                if (requiresAuth && !user) {
-                    renderAuthPrompt(pageId); return;
+                const requiresAuth = ['orders-page', 'profile-page', 'deposit-page', 'notifications-page'];
+                if (requiresAuth.includes(pageId) && !user) {
+                    renderAuthPrompt(pageId);
+                    return;
                 }
                 switch (pageId) {
-                    case 'products-page': loadProducts(); break;
+                    case 'products-page': renderProductsPage(); break;
                     case 'plan-selection-page': if (data) renderPlanSelectionPage(data); break;
-                    case 'deposit-page': break;
-                    case 'orders-page': fetchMyOrders(); break;
-                    case 'profile-page': showUserProfile(); break;
-                    case 'notifications-page': loadUserNotifications(); break;
-                }
-            }
-
-            auth.onAuthStateChanged(user => {
-                const container = document.getElementById('auth-container');
-                if (user) {
-                    container.innerHTML = `
-                        <a href="#notifications-page" class="header-icon notification-bell">
-                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            <span class="notification-badge" id="notification-badge"></span>
-                        </a>
-                        <a href="#profile-page" class="header-icon profile-icon">
-                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        </a>`;
-                    
-                    listenForNotifications(user);
-                    
-                    container.querySelector('.notification-bell').addEventListener('click', (e) => {
-                         e.preventDefault();
-                         document.getElementById('notification-badge').style.display = 'none';
-                         showPage('notifications-page');
-                    });
-
-                } else {
-                    container.innerHTML = `<button id="login-signup-btn">Login / Sign Up</button>`;
-                    document.getElementById('login-signup-btn')?.addEventListener('click', () => authModal.style.display = 'block');
-                }
-                const pageId = window.location.hash.substring(1) || 'products-page';
-                if (!pageId.startsWith('plan-selection')) renderPageContent(pageId, null);
-            });
-
-            function listenForNotifications(user) {
-                db.collection('notifications').where('recipient', 'in', ['all', user.uid]).orderBy('createdAt', 'desc').limit(1).onSnapshot(snapshot => {
-                    const badge = document.getElementById('notification-badge');
-                    if (badge && !snapshot.empty) {
-                        badge.style.display = 'block';
-                    }
-                });
-            }
-
-            async function loadUserNotifications() {
-                const container = document.getElementById('notifications-container');
-                container.innerHTML = loadingSpinner;
-                const user = auth.currentUser;
-                if (!user) { renderAuthPrompt('notifications-page'); return; }
-
-                const userCreationTime = new Date(user.metadata.creationTime);
-                try {
-                    const allUsersQuery = db.collection('notifications').where('recipient', '==', 'all').where('createdAt', '>', userCreationTime).orderBy('createdAt', 'desc');
-                    const specificUserQuery = db.collection('notifications').where('recipient', '==', user.uid).orderBy('createdAt', 'desc');
-                    const [allUsersSnap, specificUserSnap] = await Promise.all([ allUsersQuery.get(), specificUserQuery.get() ]);
-                    const notifications = [];
-                    allUsersSnap.forEach(doc => notifications.push(doc.data()));
-                    specificUserSnap.forEach(doc => notifications.push(doc.data()));
-                    notifications.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-                    if (notifications.length === 0) { container.innerHTML = '<p>No new notifications.</p>'; return; }
-                    container.innerHTML = notifications.map(n => {
-                        const date = new Date(n.createdAt.toDate()).toLocaleString('bn-BD');
-                        return `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><p style="font-size: 0.8em; color: #888; text-align: right;">${date}</p></div>`;
-                    }).join('');
-                } catch (error) {
-                    console.error("Error loading notifications:", error);
-                    container.innerHTML = '<p>Could not load notifications. You might need to create Firestore indexes. Please check the console for a link.</p>';
+                    case 'deposit-page': renderDepositPage(); break;
+                    case 'orders-page': renderOrdersPage(); break;
+                    case 'profile-page': renderProfilePage(); break;
+                    case 'notifications-page': renderNotificationsPage(); break;
+                    default: showPage('products-page');
                 }
             }
             
-            function showManualPaymentModal(paymentInfo) {
+            auth.onAuthStateChanged(user => {
+                const container = document.getElementById('auth-container');
+                if (user) {
+                    container.innerHTML = `<a href="#notifications-page" class="header-icon notification-bell"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span class="notification-badge" id="notification-badge"></span></a><a href="#profile-page" class="header-icon profile-icon"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></a>`;
+                    listenForNotifications(user);
+                } else {
+                    container.innerHTML = `<button id="login-signup-btn">Login / Sign Up</button>`;
+                    container.querySelector('#login-signup-btn')?.addEventListener('click', () => authModal.style.display = 'block');
+                }
+                
+                const pageIdFromHash = window.location.hash.substring(1);
+                const initialPage = pageIdFromHash || 'products-page';
+                
+                const requiresAuth = ['orders-page', 'profile-page', 'deposit-page', 'notifications-page'];
+                if (!user && requiresAuth.includes(initialPage)) {
+                    showPage('products-page'); 
+                } else {
+                    showPage(initialPage);
+                }
+            });
+            
+            navItems.forEach(item => item.addEventListener('click', e => { e.preventDefault(); showPage(item.getAttribute('href').substring(1)); }));
+            window.addEventListener('hashchange', () => { const hash = window.location.hash.substring(1); if(hash) showPage(hash); });
+            
+            async function renderProductsPage() {
+                const page = document.getElementById('products-page');
+                page.innerHTML = `<div id="banner-slider" class="slider-container"><div class="slider-wrapper"></div><div class="slider-dots"></div></div><h2 class="section-title" style="margin-top:0;">Available Products</h2><div id="product-list" class="product-grid">${loadingSpinner}</div>`;
+                const productList = page.querySelector('#product-list');
+                try {
+                    await loadSliderBanners();
+                    const productsSnap = await db.collection("products").orderBy("name").get();
+                    productList.innerHTML = productsSnap.docs.map(doc => {
+                        const p = doc.data();
+                        return `<div class="product-card" data-name="${p.name}" data-plans='${JSON.stringify(p.plans || [])}' data-image="${p.imageUrl || ''}"><img src="${p.imageUrl}" alt="${p.name}"><h3>${p.name}</h3></div>`;
+                    }).join('') || '<p>No products found.</p>';
+                    page.querySelector('#product-list').addEventListener('click', e => {
+                        const card = e.target.closest('.product-card');
+                        if (card) { showPage('plan-selection-page', JSON.parse(JSON.stringify(card.dataset))); }
+                    });
+                } catch (e) {
+                    productList.innerHTML = `<p>Error loading products.</p>`;
+                    console.error(e);
+                }
+            }
+
+            async function loadSliderBanners() {
+                const sliderWrapper = document.getElementById('banner-slider').querySelector('.slider-wrapper');
+                const dotsContainer = document.getElementById('banner-slider').querySelector('.slider-dots');
+                try {
+                    const doc = await db.collection('settings').doc('sliderBanners').get();
+                    if (doc.exists && doc.data().banners && doc.data().banners.length > 0) {
+                        const banners = doc.data().banners;
+                        sliderWrapper.innerHTML = banners.map(b => `<div class="slide"><a href="${b.targetUrl}" target="_blank"><img src="${b.imageUrl}" alt="Banner"></a></div>`).join('');
+                        dotsContainer.innerHTML = banners.map((_, i) => `<span class="dot" data-slide-index="${i}"></span>`).join('');
+                        startSlider(banners.length);
+                        dotsContainer.addEventListener('click', e => {
+                            if (e.target.classList.contains('dot')) {
+                                const index = parseInt(e.target.dataset.slideIndex);
+                                clearInterval(sliderInterval);
+                                showSlides(index, banners.length);
+                                startSlider(banners.length);
+                            }
+                        });
+                    } else {
+                        document.getElementById('banner-slider').style.display = 'none';
+                    }
+                } catch (e) { console.error("Error loading banners:", e); }
+            }
+            function startSlider(totalSlides) { if (totalSlides <= 1) return; slideIndex = 0; showSlides(slideIndex, totalSlides); clearInterval(sliderInterval); sliderInterval = setInterval(() => { slideIndex = (slideIndex + 1) % totalSlides; showSlides(slideIndex, totalSlides); }, 3000); }
+            function showSlides(n, total) { const wrapper = document.querySelector('.slider-wrapper'); const dots = document.querySelectorAll('#banner-slider .dot'); if (!wrapper || dots.length === 0) return; slideIndex = n; wrapper.style.transform = `translateX(-${slideIndex * 100}%)`; dots.forEach(d => d.classList.remove('active')); if(dots[slideIndex]) dots[slideIndex].classList.add('active'); }
+
+            async function renderPlanSelectionPage(data) { const page = document.getElementById('plan-selection-page'); const user = auth.currentUser; let userBalance = 0; if (user) { const userDoc = await db.collection('users').doc(user.uid).get(); if (userDoc.exists) userBalance = userDoc.data().balance || 0; } const plans = JSON.parse(data.plans); page.innerHTML = `<div class="product-header"><img src="${data.image}"><div><h3>${data.name}</h3></div></div>${user ? `<div class="balance-display"><h4>Your Balance</h4><p>${userBalance.toFixed(2)} TK</p></div>` : ''}<div class="plan-grid">${plans.map((p, i) => p.stock ? `<div class="plan-item-radio"><input type="radio" id="plan-${i}" name="plan" value='${JSON.stringify(p)}'><label class="plan-label-radio" for="plan-${i}">${p.name}<span class="plan-price">${p.price} TK</span></label></div>` : '').join('')}</div><div class="input-group"><label for="delivery-email">আপনার ইমেইল এড্রেসটি দিন:</label><input type="email" id="delivery-email" placeholder="যে ইমেইলে সার্ভিসটি চান" value="${user ? user.email : ''}"></div><div id="purchase-options">${user ? `<button id="pay-with-balance-btn" class="next-step-button">Pay with Balance</button>` : ''}<button id="pay-manually-btn" class="next-step-button" style="background-color: var(--primary-color);">Pay Now</button></div><div class="payment-notice"><strong>গুরুত্বপূর্ণ:</strong> দয়া করে সঠিক ইমেইল এড্রেস দিন।</div><button class="back-button">&laquo; Back</button>`; const getOrderDetails = () => { const selected = page.querySelector('input[name="plan"]:checked'); if (!selected) { alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।'); return null; } const email = page.querySelector('#delivery-email').value.trim(); if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।'); return null; } return { plan: JSON.parse(selected.value), deliveryEmail: email }; }; const handlePayment = (paymentFunction) => { if (!auth.currentUser) { alert('অর্ডার করার জন্য অনুগ্রহ করে লগইন করুন।'); authModal.style.display = 'block'; return; } paymentFunction(); }; page.querySelector('#pay-manually-btn').addEventListener('click', () => { handlePayment(() => { const details = getOrderDetails(); if (details) showManualPaymentModal({ amount: details.plan.price, type: 'order', details: { productName: data.name, packageName: details.plan.name, imageUrl: data.image, deliveryEmail: details.deliveryEmail } }); }); }); page.querySelector('.back-button').addEventListener('click', () => showPage('products-page')); const balanceBtn = page.querySelector('#pay-with-balance-btn'); if (balanceBtn) { balanceBtn.addEventListener('click', () => { handlePayment(async () => { const details = getOrderDetails(); if (!details) return; const price = parseFloat(details.plan.price); if (userBalance < price) return alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।'); if (confirm(`আপনি কি আপনার ব্যালেন্স থেকে ${price} টাকা দিয়ে এই অর্ডারটি করতে চান?`)) { const userRef = db.collection('users').doc(user.uid); try { await db.runTransaction(async t => { const userDoc = await t.get(userRef); if (!userDoc.exists) throw "User not found!"; const newBalance = userDoc.data().balance - price; if (newBalance < 0) throw "Insufficient balance."; t.update(userRef, { balance: newBalance }); t.set(db.collection('orders').doc(), { productName: data.name, packageName: details.plan.name, userId: user.uid, userEmail: user.email, deliveryEmail: details.deliveryEmail, status: "Pending", createdAt: new Date(), paidWith: "balance", amount: price }); }); alert('আপনার অর্ডারটি সফলভাবে জমা হয়েছে।'); showPage('orders-page'); } catch (error) { console.error("Balance transaction failed: ", error); alert("একটি সমস্যা হয়েছে।"); } } }); }); } }
+            function renderDepositPage() { const page = document.getElementById('deposit-page'); page.innerHTML = `<h2 class="section-title" style="margin-top:0;">Add Balance</h2><div class="step-box"><div class="step-header"><span class="step-number">১</span><h3>টাকার পরিমাণ লিখুন</h3></div><p>আপনি কত টাকা যোগ করতে চান তা নিচের বক্সে লিখুন (সর্বনিম্ন ৫০)।</p><input type="number" id="custom-deposit-amount" placeholder="e.g., 500" min="50" style="width: calc(100% - 30px); padding: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 1.2em; text-align: center; margin-top: 10px;"><button id="deposit-proceed-btn" class="next-step-button" style="margin-top: 20px; background-color: var(--primary-color);">পেমেন্টের জন্য এগিয়ে যান</button></div>`; page.querySelector('#deposit-proceed-btn').addEventListener('click', () => { if (!auth.currentUser) { alert('ব্যালেন্স যোগ করার জন্য অনুগ্রহ করে লগইন করুন।'); authModal.style.display = 'block'; return; } const amount = parseFloat(page.querySelector('#custom-deposit-amount').value); if (isNaN(amount) || amount < 50) { alert('দয়া করে ৫০ বা তার বেশি টাকার পরিমাণ লিখুন।'); return; } showManualPaymentModal({ amount, type: 'deposit' }); }); }
+            async function renderOrdersPage() { const page = document.getElementById('orders-page'); page.innerHTML = `<h2 class="section-title" style="margin-top:0;">My Order History</h2><div id="orders-container">${loadingSpinner}</div>`; const user = auth.currentUser; try { const snap = await db.collection("orders").where("userId", "==", user.uid).orderBy("createdAt", "desc").get(); page.querySelector('#orders-container').innerHTML = snap.empty ? '<p>No orders yet.</p>' : snap.docs.map(doc => { const o = doc.data(); const date = new Date(o.createdAt.toDate()).toLocaleString("bn-BD"); let status = (o.status || 'pending').replace(/_/g, ' '); status = status.charAt(0).toUpperCase() + status.slice(1); const colorMap = { 'Completed': 'var(--success-color)', 'Pending': 'var(--pending-color)', 'Verification pending': 'var(--pending-color)', 'Rejected': 'var(--danger-color)' }; return `<div class="order-item" style="border-left-color: ${colorMap[status] || 'var(--pending-color)'};"><h4>${o.productName} (${o.packageName})</h4><p><strong>Amount:</strong> ${o.amount || 'N/A'} TK</p><p><strong>Method:</strong> ${o.paymentMethod || o.paidWith || 'N/A'}</p><p><strong>Date:</strong> ${date}</p><p><strong>Status:</strong> <span class="status-badge" style="background-color:${colorMap[status] || 'var(--pending-color)'};">${status}</span></p>${o.transactionId ? `<p style="font-size:0.8em; word-break:break-all;"><strong>TrxID:</strong> ${o.transactionId}</p>` : ''}</div>`; }).join(''); } catch (e) { page.querySelector('#orders-container').innerHTML = '<p>Error loading orders.</p>'; } }
+            async function renderProfilePage() { const page = document.getElementById('profile-page'); page.innerHTML = `<h2 class="section-title" style="margin-top:0;">My Profile</h2><div id="profile-container">${loadingSpinner}</div>`; const user = auth.currentUser; try { const userDoc = await db.collection('users').doc(user.uid).get(); const balance = userDoc.exists ? (userDoc.data().balance || 0) : 0; page.querySelector('#profile-container').innerHTML = `<div class="profile-card"><h3><span>${user.displayName || 'User'}</span></h3><div class="balance-display"><h4>Current Balance</h4><p>${balance.toFixed(2)} TK</p></div><p><strong>Email:</strong> ${user.email}</p><button id="logout-button">Logout</button></div>`; page.querySelector('#logout-button').addEventListener('click', () => auth.signOut()); } catch (e) { page.querySelector('#profile-container').innerHTML = '<p>Error loading profile.</p>'; } }
+            function renderNotificationsPage() { document.getElementById('notifications-page').innerHTML = `<h2 class="section-title" style="margin-top:0;">My Notifications</h2><div id="notifications-container"><p>No new notifications.</p></div>`; }
+            function listenForNotifications(user) { db.collection('notifications').where('recipient', 'in', ['all', user.uid]).orderBy('createdAt', 'desc').onSnapshot(snapshot => { const badge = document.getElementById('notification-badge'); const container = document.getElementById('notifications-container'); if(snapshot.empty){ container.innerHTML = '<p>No new notifications.</p>'; return; } const notifications = snapshot.docs.map(doc => { const data = doc.data(); const date = new Date(data.createdAt.toDate()).toLocaleString('bn-BD'); return `<div class="notification-item"><h4>${data.title}</h4><p>${data.message}</p><p style="font-size:0.8em; color:#999;">${date}</p></div>` }).join(''); container.innerHTML = notifications; if(badge) badge.style.display = 'block'; }); }
+            function renderAuthPrompt(pageId) { const container = document.getElementById(pageId); container.innerHTML = `<div class="auth-prompt"><h3>Please login to view this page.</h3><button class="prompt-login-btn">Login / Sign Up</button></div>`; container.querySelector('.prompt-login-btn').addEventListener('click', () => authModal.style.display = 'block'); }
+            
+            async function showManualPaymentModal(paymentInfo) {
+                if (paymentMethodsList.length === 0) { await loadPaymentMethods(); }
                 currentPayment = paymentInfo;
                 const { amount, type, details } = paymentInfo;
                 const modalContent = document.getElementById('payment-modal-content');
                 let headerHTML = `<h3 style="text-align:center;">পেমেন্ট করুন: ${amount} টাকা</h3>`;
-                if (type === 'order' && details) { headerHTML = `<div class="payment-product-info"><img src="${details.imageUrl}" alt="${details.productName}"><h4>${details.productName} (${details.packageName})</h4><p>${amount} TK</p></div>`; }
-                modalContent.innerHTML = `${headerHTML}<p style="text-align:center; color: #555;">একটি পেমেন্ট মাধ্যম বেছে নিন</p>
-                    <div class="payment-method-selector">
-                        <button class="payment-method-btn" data-method="bKash"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAsAOP2cgQ1Rjez63nVolBzH_6DHSa6Yjvp7v5H4AYKGnOgeDsiVZSj58QMwQJVpCeOcORLKsJTekWwMZSA4oWaAcOVHgLEh3_MrvJLONOVx6S58xmVeaTPR59rQ5BYoXfRMs7m2L0Hzsvz_GPceeVP2hPsu2R-Og1sCBjTawuFdeZaJ8WVtmG0AlWtMrK/s1600/38242.png" alt="bKash"></button>
-                        <button class="payment-method-btn" data-method="Nagad"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjszctpORk3UecPrJ9xfVZMe3RXyR3KyPIJ6dtqFHQGEyX1K_JMuzVjv2AI9lhNMVoyPj_EcdftuV209dlGRsIcLAr2NK6mSKdEqAsKgA5bz9Ft7N31iljsfKoddwbUL5k_xc0UQY8fe0DZ3D3jNh9J14M86aWcUWnMhVHmzz-e7DGA1DCpHZVdjQHrU24z/s1600/38243.png" alt="Nagad"></button>
-                    </div><div id="payment-instructions-container" style="display:none;"></div>`;
+                if (type === 'order' && details) {
+                    headerHTML = `<div class="payment-product-info"><img src="${details.imageUrl}" alt="${details.productName}"><h4>${details.productName} (${details.packageName})</h4><p>${amount} TK</p></div>`;
+                }
+                const paymentButtonsHTML = paymentMethodsList.length > 0
+                    ? paymentMethodsList.map((m, i) => `<button class="payment-method-btn" data-method-index="${i}"><img src="${m.logoUrl}" alt="${m.name}"></button>`).join('')
+                    : '<p style="text-align:center; color: var(--danger-color);">Currently, no payment methods are available.</p>';
+                
+                modalContent.innerHTML = `${headerHTML}<p style="text-align:center; color: #555;">একটি পেমেন্ট মাধ্যম বেছে নিন</p><div class="payment-method-selector">${paymentButtonsHTML}</div><div id="payment-instructions-container" style="display:none;"></div>`;
                 paymentModal.style.display = 'block';
             }
 
-            paymentModal.addEventListener('click', async e => {
-                const paymentMethodBtn = e.target.closest('.payment-method-btn');
-                if (paymentMethodBtn) {
-                    document.querySelectorAll('.payment-method-btn').forEach(btn => btn.classList.remove('selected'));
-                    paymentMethodBtn.classList.add('selected');
-                    currentPayment.method = paymentMethodBtn.dataset.method;
-                    const container = document.getElementById('payment-instructions-container');
-                    const paymentNumber = '01832791849';
-                    container.innerHTML = `<div id="payment-instructions" style="background-color:${currentPayment.method==='bKash'?'#fce4ec':'#fff3e0'};color:${currentPayment.method==='bKash'?'#c2185b':'#ef6c00'};"><ul><li>• আপনার ${currentPayment.method} অ্যাপে যান অথবা *${currentPayment.method==='bKash'?'247':'167'}# ডায়াল করুন।</li><li>• "Send Money" অপশনটি বেছে নিন।</li><li>• প্রাপক নম্বর: <strong style="font-size: 1.1em;">${paymentNumber}</strong> <button class="copy-btn" data-copy="${paymentNumber}">Copy</button></li><li>• টাকার পরিমাণ দিন: <strong>${currentPayment.amount}</strong></li><li>• পেমেন্ট সম্পন্ন হলে, নিচে ট্রানজেকশন আইডিটি দিন।</li></ul></div><div style="margin-top: 20px;"><input type="text" id="transaction-id-input" placeholder="ট্রানজেকশন আইডি দিন" style="width: calc(100% - 24px); padding: 12px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 1em;"><button id="verify-payment-btn" class="next-step-button" style="margin-top:10px;">Verify Payment</button></div>`;
-                    container.style.display = 'block';
-                }
-                if (e.target.classList.contains('copy-btn')) { navigator.clipboard.writeText(e.target.dataset.copy).then(() => alert('নম্বর কপি করা হয়েছে!')); }
-                if (e.target.id === 'verify-payment-btn') {
-                    const transactionId = document.getElementById('transaction-id-input').value.trim();
-                    if (!transactionId) { alert('অনুগ্রহ করে ট্রানজেকশন আইডি দিন।'); return; }
-                    e.target.disabled = true; e.target.textContent = 'Verifying...';
-                    const commonData = { userId: auth.currentUser.uid, userEmail: auth.currentUser.email, amount: currentPayment.amount, paymentMethod: currentPayment.method, transactionId, paymentTo: '01832791849', status: 'verification_pending', createdAt: new Date() };
-                    try {
-                        if (currentPayment.type === 'deposit') { await db.collection('deposits').add(commonData); alert('আপনার ব্যালেন্স যোগ করার অনুরোধটি গ্রহণ করা হয়েছে।'); }
-                        else if (currentPayment.type === 'order') { await db.collection('orders').add({ ...commonData, ...currentPayment.details }); alert('আপনার অর্ডারটি গ্রহণ করা হয়েছে। ভেরিফাই করার পর সম্পন্ন করা হবে।'); }
-                        paymentModal.style.display = 'none';
-                        showPage('orders-page');
-                    } catch (err) { alert('একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।'); } finally { e.target.disabled = false; e.target.textContent = 'Verify Payment'; }
-                }
-                if (e.target.id === 'payment-modal-close') { paymentModal.style.display = 'none'; }
-            });
-
-            async function loadProducts() {
-                const list = document.getElementById('product-list');
-                list.innerHTML = loadingSpinner;
-                const snap = await db.collection('products').orderBy('name').get();
-                list.innerHTML = snap.docs.map(doc => {
-                    const p = doc.data();
-                    return `<div class="product-card" data-name="${p.name}" data-plans='${JSON.stringify(p.plans || [])}' data-image="${p.imageUrl || ''}"><img src="${p.imageUrl || ''}" alt="${p.name}"><h3>${p.name}</h3></div>`;
-                }).join('');
-            }
-
-            async function renderPlanSelectionPage(data) {
-                const { productName, plans, imageUrl } = data;
-                const page = document.getElementById('plan-selection-page');
-                const user = auth.currentUser;
-                let userBalance = 0;
-                if (user) {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) userBalance = userDoc.data().balance || 0;
-                }
-                page.innerHTML = `
-                    <div class="product-header"><img src="${imageUrl}"><div><h3>${productName}</h3></div></div>
-                    ${user ? `<div class="balance-display"><h4>Your Balance</h4><p>${userBalance.toFixed(2)} TK</p></div>` : ''}
-                    <div class="plan-grid">${plans.map((plan, i) => plan.stock ? `<div class="plan-item-radio"><input type="radio" id="plan-${i}" name="plan" value='${JSON.stringify(plan)}'><label class="plan-label-radio" for="plan-${i}">${plan.name}<span class="plan-price">${plan.price} TK</span></label></div>` : '').join('')}</div>
-                    <div class="input-group"><label for="delivery-email">আপনার ইমেইল এড্রেসটি দিন:</label><input type="email" id="delivery-email" placeholder="যে ইমেইলে সার্ভিসটি চান" value="${user ? user.email : ''}"></div>
-                    <div id="purchase-options">
-                        ${user ? `<button id="pay-with-balance-btn" class="next-step-button">Pay with Balance</button>` : ''}
-                        <button id="pay-manually-btn" class="next-step-button" style="background-color: var(--primary-color);">Pay with bKash / Nagad</button>
-                    </div>
-                    <div class="payment-notice"><strong>গুরুত্বপূর্ণ:</strong> দয়া করে সঠিক ইমেইল এড্রেস দিন। আপনার অর্ডারের সকল তথ্য এই ইমেইলে পাঠানো হবে। ভুল তথ্যের জন্য অর্ডারটি বাতিল হতে পারে।</div>
-                    <button class="back-button">&laquo; Back</button>`;
-                
-                function getOrderDetails() {
-                    const selected = page.querySelector('input[name="plan"]:checked');
-                    if (!selected) { alert('অনুগ্রহ করে একটি প্ল্যান বেছে নিন।'); return null; }
-                    const deliveryEmail = document.getElementById('delivery-email').value.trim();
-                    if (!deliveryEmail || !/^\S+@\S+\.\S+$/.test(deliveryEmail)) { alert('অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।'); return null; }
-                    const plan = JSON.parse(selected.value);
-                    return { plan, deliveryEmail };
-                }
-
-                page.querySelector('#pay-manually-btn').addEventListener('click', () => {
-                    const details = getOrderDetails();
-                    if (!details) return;
-                    showManualPaymentModal({ amount: details.plan.price, type: 'order', details: { productName, packageName: details.plan.name, imageUrl, deliveryEmail: details.deliveryEmail } });
-                });
-                page.querySelector('.back-button').addEventListener('click', () => showPage('products-page'));
-                
-                const payWithBalanceBtn = page.querySelector('#pay-with-balance-btn');
-                if (payWithBalanceBtn) {
-                    payWithBalanceBtn.addEventListener('click', async () => {
-                        const details = getOrderDetails();
-                        if (!details) return;
-                        const price = parseFloat(details.plan.price);
-                        if (userBalance < price) return alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।');
-                        if (confirm(`আপনি কি আপনার ব্যালেন্স থেকে ${price} টাকা দিয়ে এই অর্ডারটি করতে চান? টাকা কেটে নেওয়া হবে কিন্তু অর্ডারটি অ্যাডমিন রিভিউ করার জন্য পেন্ডিং থাকবে।`)) {
-                            const userRef = db.collection('users').doc(user.uid);
-                            try {
-                                await db.runTransaction(async t => {
-                                    const userDoc = await t.get(userRef);
-                                    if (!userDoc.exists) throw "User not found!";
-                                    const newBalance = userDoc.data().balance - price;
-                                    if (newBalance < 0) throw "Insufficient balance.";
-                                    t.update(userRef, { balance: newBalance });
-                                    const orderRef = db.collection('orders').doc();
-                                    t.set(orderRef, { productName, packageName: details.plan.name, userId: user.uid, userEmail: user.email, deliveryEmail: details.deliveryEmail, status: "Pending", createdAt: new Date(), paidWith: "balance", amount: price });
-                                });
-                                alert('আপনার অর্ডারটি সফলভাবে জমা হয়েছে এবং পর্যালোচনার জন্য পেন্ডিং আছে।');
-                                showPage('orders-page');
-                            } catch (error) { console.error("Balance transaction failed: ", error); alert("একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।"); }
-                        }
-                    });
-                }
-            }
+            paymentModal.addEventListener('click', async e => { if (e.target.id === 'payment-modal-close' || e.target.classList.contains('close-button')) { paymentModal.style.display = 'none'; return; } const paymentBtn = e.target.closest('.payment-method-btn'); if (paymentBtn) { document.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('selected')); paymentBtn.classList.add('selected'); const method = paymentMethodsList[parseInt(paymentBtn.dataset.methodIndex)]; currentPayment.method = method; const container = document.getElementById('payment-instructions-container'); container.innerHTML = `<div id="payment-instructions" style="background:#f0f4ff; padding:15px; border-radius:8px;"><ul><li>• আপনার ${method.name} অ্যাপ থেকে "Send Money" করুন।</li><li style="font-size:1.1em;">• প্রাপক নম্বর: <strong>${method.number}</strong> <button class="copy-btn">Copy</button></li><li>• টাকার পরিমাণ দিন: <strong>${currentPayment.amount}</strong></li><li>• পেমেন্ট সম্পন্ন হলে, নিচে ট্রানজেকশন আইডিটি দিন।</li></ul></div><div class="input-group" style="margin-top:20px;"><input type="text" id="transaction-id-input" placeholder="Transaction ID"></div><button id="verify-payment-btn" class="next-step-button">Verify Payment</button>`; container.querySelector('.copy-btn').onclick = () => navigator.clipboard.writeText(method.number).then(() => alert('Copied!')); container.style.display = 'block'; } if (e.target.id === 'verify-payment-btn') { const trxId = document.getElementById('transaction-id-input').value.trim(); if (!trxId) return alert('Please enter Transaction ID.'); e.target.disabled = true; e.target.textContent = 'Verifying...'; const commonData = { userId: auth.currentUser.uid, userEmail: auth.currentUser.email, amount: currentPayment.amount, paymentMethod: currentPayment.method.name, transactionId: trxId, paymentTo: currentPayment.method.number, status: 'pending', createdAt: new Date() }; try { if (currentPayment.type === 'deposit') await db.collection('deposits').add(commonData); else await db.collection('orders').add({ ...commonData, ...currentPayment.details }); alert('Your request has been submitted successfully!'); paymentModal.style.display = 'none'; showPage('orders-page'); } catch (err) { alert('An error occurred. Please try again.'); } finally { e.target.disabled = false; e.target.textContent = 'Verify Payment'; } } });
+            authModal.querySelector('.close-button').onclick = () => authModal.style.display = 'none';
+            authModal.addEventListener('click', e => { if(e.target.classList.contains('form-switch-link')) { authModal.querySelectorAll('.form-container').forEach(f => f.classList.remove('active')); document.getElementById(e.target.dataset.form).classList.add('active'); }});
+            document.getElementById('login-form').addEventListener('submit', e => { e.preventDefault(); auth.signInWithEmailAndPassword(e.target.elements['login-email'].value, e.target.elements['login-password'].value).then(() => {authModal.style.display = 'none';}).catch(err => alert(err.message)); });
+            document.getElementById('signup-form').addEventListener('submit', async e => { e.preventDefault(); const name = e.target.elements['signup-name'].value, email = e.target.elements['signup-email'].value, pass = e.target.elements['signup-password'].value; try { const cred = await auth.createUserWithEmailAndPassword(email, pass); await cred.user.updateProfile({ displayName: name }); await db.collection('users').doc(cred.user.uid).set({ email, displayName: name, balance: 0, createdAt: new Date() }); authModal.style.display = 'none'; } catch (err) { alert(err.message); } });
+            document.getElementById('forgot-password-btn').addEventListener('click', e => { e.preventDefault(); const email = document.getElementById('login-email').value; if (!email) return alert('Please enter your email.'); auth.sendPasswordResetEmail(email).then(() => alert('Password reset link sent!')).catch(err => alert(err.message)); });
             
-            document.getElementById('deposit-proceed-btn')?.addEventListener('click', () => {
-                const amountInput = document.getElementById('custom-deposit-amount');
-                const amount = parseFloat(amountInput.value);
-                if (isNaN(amount) || amount < 50 || amount > 25000) { alert('দয়া করে ৫০ থেকে ২৫,০০০ এর মধ্যে একটি সঠিক পরিমাণ লিখুন।'); return; }
-                showManualPaymentModal({ amount, type: 'deposit' });
-            });
-
-            function renderAuthPrompt(pageId) {
-                const container = document.getElementById(pageId);
-                container.innerHTML = `<div class="auth-prompt"><h3>Please login to view this page.</h3><button class="prompt-login-btn">Login / Sign Up</button></div>`;
-                container.querySelector('.prompt-login-btn').addEventListener('click', () => document.getElementById('auth-modal').style.display = 'block');
-            }
-
-            async function fetchMyOrders() {
-                const container = document.getElementById('orders-container');
-                container.innerHTML = loadingSpinner;
-                const user = auth.currentUser;
-                if (!user) { renderAuthPrompt('orders-page'); return; }
-                const snap = await db.collection('orders').where('userId', '==', user.uid).orderBy('createdAt', 'desc').get();
-                if (snap.empty) { container.innerHTML = '<p>No orders yet.</p>'; return; }
-                container.innerHTML = snap.docs.map(doc => {
-                    const o = doc.data();
-                    const date = new Date(o.createdAt.toDate()).toLocaleString('bn-BD');
-                    let status = o.status.replace(/_/g, ' ');
-                    status = status.charAt(0).toUpperCase() + status.slice(1);
-                    const colorMap = { 'Completed': 'var(--success-color)', 'Verification pending': 'var(--pending-color)', 'Pending': 'var(--pending-color)', 'Rejected': 'var(--danger-color)'};
-                    const color = colorMap[status] || 'var(--pending-color)';
-                    return `<div class="order-item" style="border-left-color: ${color};"><h4>${o.productName} (${o.packageName})</h4><p><strong>Amount:</strong> ${o.amount||'N/A'} TK</p><p><strong>Method:</strong> ${o.paymentMethod || o.paidWith || 'N/A'}</p><p><strong>Date:</strong> ${date}</p><p><strong>Status:</strong> <span class="status-badge" style="background-color:${color};">${status}</span></p>${o.transactionId ? `<p style="font-size:0.8em; word-break:break-all;"><strong>TrxID:</strong> ${o.transactionId}</p>` : ''}</div>`;
-                }).join('');
-            }
-
-            async function showUserProfile() {
-                const container = document.getElementById('profile-container');
-                container.innerHTML = loadingSpinner;
-                const user = auth.currentUser;
-                if (!user) { renderAuthPrompt('profile-page'); return; }
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                const balance = userDoc.exists ? (userDoc.data().balance || 0) : 0;
-                const snap = await db.collection('orders').where('userId', '==', user.uid).get();
-                container.innerHTML = `<div class="profile-card"><h3><span>${user.displayName || 'User'}</span></h3><div class="balance-display"><h4>Current Balance</h4><p>${balance.toFixed(2)} TK</p></div><p><strong>Email:</strong> ${user.email}</p><p><strong>Total Orders:</strong> ${snap.size}</p><button id="logout-button">Logout</button></div>`;
-                container.querySelector('#logout-button').addEventListener('click', () => auth.signOut());
-            }
-            
-            document.querySelector('main').addEventListener('click', e => {
-                const card = e.target.closest('.product-card');
-                if (card) {
-                    showPage('plan-selection-page', { productName: card.dataset.name, plans: JSON.parse(card.dataset.plans), imageUrl: card.dataset.image });
-                }
-            });
-
-            navItems.forEach(item => item.addEventListener('click', e => { e.preventDefault(); showPage(item.getAttribute('href').substring(1)); }));
-            const modalContent = document.getElementById('auth-modal-content');
-            modalContent.querySelector('.close-button').onclick = () => document.getElementById('auth-modal').style.display = 'none';
-            modalContent.addEventListener('click', e => {
-                if(e.target.classList.contains('form-switch-link')) {
-                    modalContent.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
-                    document.getElementById(e.target.dataset.form).classList.add('active');
-                }
-            });
-            document.getElementById('login-form')?.addEventListener('submit', e => { e.preventDefault(); const email=e.target.elements['login-email'].value, pass=e.target.elements['login-password'].value; auth.signInWithEmailAndPassword(email, pass).then(()=>document.getElementById('auth-modal').style.display='none').catch(err=>alert(err.message)); });
-            document.getElementById('signup-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = e.target.elements['signup-name'].value, email = e.target.elements['signup-email'].value, pass = e.target.elements['signup-password'].value;
-                try {
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                    const user = userCredential.user;
-                    await user.updateProfile({ displayName: name });
-                    await db.collection('users').doc(user.uid).set({ email, displayName: name, balance: 0, createdAt: new Date() });
-                    document.getElementById('auth-modal').style.display = 'none';
-                } catch (err) { alert(err.message); }
-            });
-            document.getElementById('forgot-password-btn')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                if (!email) { alert('Please enter your email address in the email field first.'); return; }
-                auth.sendPasswordResetEmail(email).then(() => { alert('A password reset link has been sent to your email address.'); }).catch((error) => { alert('Error: ' + error.message); });
-            });
+            // Load initial data
+            loadPaymentMethods();
         });
     </script>
 </body>
